@@ -16,6 +16,7 @@ class PROJECTC_API AClusterController : public AActor
 public:
 	AClusterController();
 	void Possess(UCluster* InSelfCluster);
+	void Test();
 
 protected:
 	virtual void Tick(float DeltaTime) override;

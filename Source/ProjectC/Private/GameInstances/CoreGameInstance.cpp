@@ -22,6 +22,9 @@ void UCoreGameInstance::SpawnGrid(UWorld* InWorld, const FGrid& InGrid)
 
 	AllyCluster->SetTargetCluster(EnemyCluster);
 	EnemyCluster->SetTargetCluster(AllyCluster);
+
+	AllyCluster->Test();
+	EnemyCluster->Test();
 }
 
 void UCoreGameInstance::AddUnitToCluster(ABaseCharacter* InCharacter, ERoleType Type, bool IsAlly)

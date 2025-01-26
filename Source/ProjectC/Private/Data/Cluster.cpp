@@ -7,6 +7,11 @@ UCluster::UCluster()
 {
 }
 
+void UCluster::Test()
+{
+	ClusterController->Test();
+}
+
 void UCluster::InitCluster(UWorld* InWorld)
 {
 	if (InWorld)
@@ -51,4 +56,24 @@ void UCluster::AddUnit(ABaseCharacter* InCharacter, ERoleType Type)
 void UCluster::SetTargetCluster(UCluster* InTargetCluster)
 {
 	TargetCluster = InTargetCluster;
+}
+
+UCluster* UCluster::GetTargetCluster()
+{
+	return TargetCluster;
+}
+
+TArray<ABaseCharacter*>& UCluster::GetTankArray()
+{
+	return TankArray;
+}
+
+TArray<ABaseCharacter*>& UCluster::GetHealerArray()
+{
+	return HealerArray;
+}
+
+TArray<ABaseCharacter*>& UCluster::GetDealerArray()
+{
+	return DealerArray;
 }

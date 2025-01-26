@@ -32,15 +32,19 @@ void ADemoGameMode::BeginPlay()
 	if (GI)
 	{
 		FGrid Map(5, 5);
-		Map(0, 0) = FGridTile(ERoleType::Dealer, false);
-		Map(0, 1) = FGridTile(ERoleType::Tank, false);
-		Map(0, 2) = FGridTile(ERoleType::Dealer, false);
+		Map(0, 4) = FGridTile(ERoleType::Dealer, false);
 		Map(0, 3) = FGridTile(ERoleType::Dealer, false);
+		Map(0, 2) = FGridTile(ERoleType::Dealer, false);
+		Map(1, 2) = FGridTile(ERoleType::Tank, false);
+		Map(0, 1) = FGridTile(ERoleType::Tank, false);
+		Map(0, 0) = FGridTile(ERoleType::Tank, false);
 
-		Map(3, 0) = FGridTile(ERoleType::Dealer, true);
-		Map(3, 1) = FGridTile(ERoleType::Dealer, true);
-		Map(3, 2) = FGridTile(ERoleType::Dealer, true);
-		Map(3, 3) = FGridTile(ERoleType::Tank, true);
+		Map(4, 2) = FGridTile(ERoleType::Dealer, true);
+		Map(4, 1) = FGridTile(ERoleType::Dealer, true);
+		Map(4, 0) = FGridTile(ERoleType::Dealer, true);
+		Map(2, 1) = FGridTile(ERoleType::Tank, true);
+		Map(2, 2) = FGridTile(ERoleType::Tank, true);
+		Map(2, 3) = FGridTile(ERoleType::Tank, true);
 
 		GI->SpawnGrid(World, Map);
 

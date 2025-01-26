@@ -19,9 +19,15 @@ class PROJECTC_API UCluster : public UObject
 	
 public:
 	UCluster();
+	void Test();
 	void InitCluster(UWorld* InWorld);
 	void AddUnit(ABaseCharacter* InCharacter, ERoleType Type);
 	void SetTargetCluster(UCluster* InTargetCluster);
+
+	UCluster* GetTargetCluster();
+	TArray<ABaseCharacter*>& GetTankArray();
+	TArray<ABaseCharacter*>& GetHealerArray();
+	TArray<ABaseCharacter*>& GetDealerArray();
 
 private:
 	UPROPERTY()
