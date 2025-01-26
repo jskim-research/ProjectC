@@ -9,21 +9,41 @@ ABaseAIController::ABaseAIController()
 	
 }
 
-void ABaseAIController::BeginPlay()
+void ABaseAIController::InitClusterBlackboard()
 {
-	Super::BeginPlay();
-	bool IsAllSet = BehaviorTree && BlackboardData;
-
-	if (IsAllSet)
+	if (BlackboardData)
 	{
 		UBlackboardComponent* BlackboardComponent = GetBlackboardComponent();
 		UseBlackboard(BlackboardData, BlackboardComponent);
-		RunBehaviorTree(BehaviorTree);
-
-		UE_LOG(LogTemp, Log, TEXT("AIController is ready."));
+		UE_LOG(LogTemp, Log, TEXT("ABaseAIController::InitClusterBlackboard: Blackboard initialized."));
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("AIController is not ready."));
+
+		UE_LOG(LogTemp, Warning, TEXT("ABaseAIController::InitClusterBlackboard: BlackboardData is not found."));
 	}
+}
+
+void ABaseAIController::RunClusterBehaviorTree()
+{
+	if (BehaviorTree)
+	{
+		RunBehaviorTree(BehaviorTree);
+		UE_LOG(LogTemp, Log, TEXT("ABaseAIController::RunClusterBehaviorTree: BehaviorTree runs."));
+	}
+	else
+	{
+		UE_LOG(LogTemp, Log, TEXT("ABaseAIController::RunClusterBehaviorTree: BehaviorTree is not found."));
+	}
+}
+
+void ABaseAIController::RunController(UBlackboardCharacterArrayObject* TankArray, UBlackboardCharacterArrayObject* DealerArray, UBlackboardCharacterArrayObject* HealerArray)
+{
+	// Blackboard 를 먼저 활성화 시켜야 BehaviorTree 블루프린트 receive activation ai event 에서
+	// Blackboard 데이터 기반 작업 정상 수행 가능
+	InitClusterBlackboard();
+	GetBlackboardComponent()->SetValueAsObject("TankArray", TankArray);
+	GetBlackboardComponent()->SetValueAsObject("HealerArray", HealerArray);
+	GetBlackboardComponent()->SetValueAsObject("DealerArray", DealerArray);
+	RunClusterBehaviorTree();
 }

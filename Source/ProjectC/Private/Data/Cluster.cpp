@@ -23,9 +23,7 @@ void UCluster::InitCluster(UWorld* World)
 		if (AIControllerClass)
 		{
 			ClusterController = World->SpawnActor<ABaseAIController>(AIControllerClass);
-			ClusterController->GetBlackboardComponent()->SetValueAsObject("TankArray", TankArrayObject);
-			ClusterController->GetBlackboardComponent()->SetValueAsObject("HealerArray", HealerArrayObject);
-			ClusterController->GetBlackboardComponent()->SetValueAsObject("DealerArray", DealerArrayObject);
+			ClusterController->RunController(TankArrayObject, DealerArrayObject, HealerArrayObject);
 		}
 		else
 		{
