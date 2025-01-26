@@ -4,7 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
-#include "AI/BaseAIController.h"
+#include "AI/ClusterController.h"
+#include "Characters/BaseCharacter.h"
 #include "Enums/RoleType.h"
 #include "Cluster.generated.h"
 
@@ -18,25 +19,23 @@ class PROJECTC_API UCluster : public UObject
 	
 public:
 	UCluster();
-	// Cluster AIController 활성화
-	void InitCluster(UWorld* World);
+	void InitCluster(UWorld* InWorld);
 	void AddUnit(ABaseCharacter* InCharacter, ERoleType Type);
-
-protected:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
-	UBlackboardCharacterArrayObject* TankArrayObject;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
-	UBlackboardCharacterArrayObject* HealerArrayObject;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
-	UBlackboardCharacterArrayObject* DealerArrayObject;
+	void SetTargetCluster(UCluster* InTargetCluster);
 
 private:
-	TSubclassOf<ABaseAIController> AIControllerClass;
-	
 	UPROPERTY()
-	ABaseAIController* ClusterController;
-	// 전투 대상 클러스터 index => CoreGameInstance 에서 전체 클러스터 관리
-	unsigned int TargetClusterID = 0;
+	AClusterController* ClusterController;
+
+	UPROPERTY()
+	TArray<ABaseCharacter*> TankArray;
+
+	UPROPERTY()
+	TArray<ABaseCharacter*> HealerArray;
+
+	UPROPERTY()
+	TArray<ABaseCharacter*> DealerArray;
+
+	UPROPERTY()
+	UCluster* TargetCluster;
 };

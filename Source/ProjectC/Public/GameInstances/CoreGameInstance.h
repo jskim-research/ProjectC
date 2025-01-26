@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
-#include "AI/BaseAIController.h"
+#include "AI/ClusterController.h"
 #include "Spawners/GridSpawner.h"
 #include "Data/Grid.h"
 #include "Data/Cluster.h"

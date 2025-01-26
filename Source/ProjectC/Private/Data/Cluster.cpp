@@ -5,33 +5,26 @@
 
 UCluster::UCluster()
 {
-	static ConstructorHelpers::FClassFinder<ABaseAIController> BPClass(TEXT("/Game/Blueprints/AI/BP_ClusterAIController"));
-	if (BPClass.Class != NULL)
-	{
-		AIControllerClass = BPClass.Class;
-	}
-
-	TankArrayObject = NewObject<UBlackboardCharacterArrayObject>();
-	HealerArrayObject = NewObject<UBlackboardCharacterArrayObject>();
-	DealerArrayObject = NewObject<UBlackboardCharacterArrayObject>();
 }
 
-void UCluster::InitCluster(UWorld* World)
+void UCluster::InitCluster(UWorld* InWorld)
 {
-	if (World)
+	if (InWorld)
 	{
-		if (AIControllerClass)
+		ClusterController = InWorld->SpawnActor<AClusterController>();
+
+		if (ClusterController)
 		{
-			ClusterController = World->SpawnActor<ABaseAIController>(AIControllerClass);
-			ClusterController->RunController(TankArrayObject, DealerArrayObject, HealerArrayObject);
+			ClusterController->Possess(this);
 		}
 		else
 		{
-			UE_LOG(LogTemp, Warning, TEXT("UCluster::InitCluster: AIControllerClass is not found."));
+			UE_LOG(LogTemp, Warning, TEXT("UCluster::InitCluster: ClusterController Spawn Failed."));
 		}
 	}
 	else
 	{
+
 		UE_LOG(LogTemp, Warning, TEXT("UCluster::InitCluster: World is not found."));
 	}
 }
@@ -41,16 +34,21 @@ void UCluster::AddUnit(ABaseCharacter* InCharacter, ERoleType Type)
 	switch (Type)
 	{
 	case ERoleType::Dealer:
-		DealerArrayObject->AddCharacter(InCharacter);
+		DealerArray.Add(InCharacter);
 		break;
 	case ERoleType::Tank:
-		TankArrayObject->AddCharacter(InCharacter);
+		TankArray.Add(InCharacter);
 		break;
 	case ERoleType::Healer:
-		HealerArrayObject->AddCharacter(InCharacter);
+		HealerArray.Add(InCharacter);
 		break;
 	case ERoleType::None:
 		UE_LOG(LogTemp, Warning, TEXT("UCluster::AddUnit: ERoleType::None is not supported."));
 		break;
 	}
+}
+
+void UCluster::SetTargetCluster(UCluster* InTargetCluster)
+{
+	TargetCluster = InTargetCluster;
 }
