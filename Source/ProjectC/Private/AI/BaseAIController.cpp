@@ -3,12 +3,27 @@
 
 #include "AI/BaseAIController.h"
 
+ABaseAIController::ABaseAIController()
+{
+	// 모든 변수를 초기화해주는 것이 좋지만 BehaviorTree, BlackboardData 는 외부에서 설정하는 것 가정
+	
+}
+
 void ABaseAIController::BeginPlay()
 {
-	UBlackboardComponent* BlackboardComponent = GetBlackboardComponent();
-	if (DefaultBlackboardData && DefaultBehaviorTree && BlackboardComponent)
+	Super::BeginPlay();
+	bool IsAllSet = BehaviorTree && BlackboardData;
+
+	if (IsAllSet)
 	{
-		UseBlackboard(DefaultBlackboardData, BlackboardComponent);
-		RunBehaviorTree(DefaultBehaviorTree);
+		UBlackboardComponent* BlackboardComponent = GetBlackboardComponent();
+		UseBlackboard(BlackboardData, BlackboardComponent);
+		RunBehaviorTree(BehaviorTree);
+
+		UE_LOG(LogTemp, Log, TEXT("AIController is ready."));
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("AIController is not ready."));
 	}
 }
