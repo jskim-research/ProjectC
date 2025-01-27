@@ -22,6 +22,7 @@ public:
 	UCoreGameInstance();
 	void SpawnGrid(UWorld* InWorld, const FGrid& InGrid);
 	void AddUnitToCluster(ABaseCharacter* InCharacter, ERoleType Type, bool IsAlly);
+	void SetPlayer(ABaseCharacter* InPlayer);
 
 private:	
 	UPROPERTY()
@@ -32,4 +33,7 @@ private:
 
 	UPROPERTY()
 	UGridSpawner* Spawner;
+
+	UPROPERTY()
+	ABaseCharacter* Player;
 };

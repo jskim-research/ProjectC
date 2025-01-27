@@ -7,11 +7,6 @@ UCluster::UCluster()
 {
 }
 
-void UCluster::Test()
-{
-	ClusterController->Test();
-}
-
 void UCluster::InitCluster(UWorld* InWorld)
 {
 	if (InWorld)
@@ -76,4 +71,9 @@ TArray<ABaseCharacter*>& UCluster::GetHealerArray()
 TArray<ABaseCharacter*>& UCluster::GetDealerArray()
 {
 	return DealerArray;
+}
+
+AClusterController* UCluster::GetClusterController()
+{
+	return ClusterController;
 }

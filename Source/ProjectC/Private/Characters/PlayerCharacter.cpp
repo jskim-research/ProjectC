@@ -10,6 +10,7 @@
 #include "GameFramework/Controller.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "GameInstances/CoreGameInstance.h"
 #include "InputActionValue.h"
 
 
@@ -94,6 +95,16 @@ void APlayerCharacter::BeginPlay()
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
 	}
+
+	UWorld* World = GetWorld();
+	if (World)
+	{
+		UCoreGameInstance* GI = Cast<UCoreGameInstance>(World->GetGameInstance());
+		if (GI)
+		{
+			GI->SetPlayer(this);
+		}
+	}
 }
 
 void APlayerCharacter::Move(const FInputActionValue& Value)
@@ -134,6 +145,5 @@ void APlayerCharacter::Look(const FInputActionValue& Value)
 
 void APlayerCharacter::Jump()
 {
-	UE_LOG(LogTemp, Log, TEXT("Test Jump!"));
 	ACharacter::Jump();
 }
