@@ -42,6 +42,9 @@ void UCoreGameInstance::SetPlayer(ABaseCharacter* InPlayer)
 	Player->SetMaxHealth(50);
 	Player->SetCurrentHealth(50);
 
+	FLinearColor TeamColor = FLinearColor::Blue;
+	Player->SetBaseColor(TeamColor);
+
 	AllyCluster->AddUnit(Player, ERoleType::Healer);
 }
 

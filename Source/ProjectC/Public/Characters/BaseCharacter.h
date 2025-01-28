@@ -36,6 +36,8 @@ public:
 	void SetRange(float InRange);
 	float GetRange() const;
 
+	void SetBaseColor(FLinearColor& Color);
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

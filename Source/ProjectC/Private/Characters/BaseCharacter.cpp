@@ -73,3 +73,24 @@ float ABaseCharacter::GetRange() const
 {
 	return Range;
 }
+
+void ABaseCharacter::SetBaseColor(FLinearColor& Color)
+{
+	USkeletalMeshComponent* SelfMesh = GetMesh();
+
+	if (!SelfMesh)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("ABaseCharacter::SetBaseColor: Mesh is not found."));
+		return;
+	}
+
+	// 메쉬에 적용된 기본 머티리얼을 기반으로 동적 인스턴스를 생성
+	UMaterialInstanceDynamic* DynamicMaterial = SelfMesh->CreateAndSetMaterialInstanceDynamic(0);
+	if (!DynamicMaterial)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("ABaseCharacter::SetBaseColor: DynamicMaterial is not working."));
+		return;
+	}
+
+	DynamicMaterial->SetVectorParameterValue(FName("TeamColor"), Color);
+}

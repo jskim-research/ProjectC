@@ -159,5 +159,8 @@ void UGridSpawner::Spawn(UWorld* InWorld, FVector Position, const FGridTile& Til
 		{
 			GI->AddUnitToCluster(SpawnedCharacter, TileInfo.RoleType, TileInfo.IsAlly);
 		}
+
+		FLinearColor TeamColor = (TileInfo.IsAlly) ? FLinearColor::Blue : FLinearColor::Red;
+		SpawnedCharacter->SetBaseColor(TeamColor);
 	}
 }
