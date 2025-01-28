@@ -92,7 +92,6 @@ void AClusterController::TacticsTankHealDefense(TArray<ABaseCharacter*>& Healer,
 
 void AClusterController::TacticsDealerAttack()
 {
-	// 공격 대상 선정
 	UCluster* TargetCluster = SelfCluster->GetTargetCluster();
 	ABaseCharacter* AttackTarget = nullptr;
 	float Distance;
@@ -100,6 +99,7 @@ void AClusterController::TacticsDealerAttack()
 	AAIController* Controller;
 	int32 EvasionProbability = 50;  // %, 회피 기동 시전할 확률
 
+	// 공격 대상 선정
 	if (!TargetCluster->GetHealerArray().IsEmpty())
 	{
 		AttackTarget = GetAttackTarget(TargetCluster->GetHealerArray());
@@ -120,6 +120,12 @@ void AClusterController::TacticsDealerAttack()
 			Controller = Cast<AAIController>(Character->GetController());
 			Distance = FVector::Distance(Character->GetActorLocation(), AttackTarget->GetActorLocation());
 			ShouldEvade = false;
+
+			if (!Controller)
+			{
+				// 플레이어가 포함된 경우 controller 가 없을 수 있음
+				continue;
+			}
 
 			Controller->SetFocalPoint(AttackTarget->GetActorLocation());
 
@@ -154,8 +160,67 @@ void AClusterController::TacticsDealerAttack()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("AClusterController::TacticsDealerAttack: Attack target is not found."));
 	}
+}
 
-	
+void AClusterController::TacticsHealerHeal()
+{
+	ABaseCharacter* HealTarget = nullptr;
+	float Distance;
+	bool ShouldEvade = false;
+	AAIController* Controller;
+	int32 EvasionProbability = 50;  // %, 회피 기동 시전할 확률
+
+	// 힐 대상 선정
+	HealTarget = GetHealTarget();
+
+	if (HealTarget)
+	{
+		for (ABaseCharacter* Character : SelfCluster->GetHealerArray())
+		{
+			// Cast 비용 있으니 미리 Cache 해두자
+			Controller = Cast<AAIController>(Character->GetController());
+			Distance = FVector::Distance(Character->GetActorLocation(), HealTarget->GetActorLocation());
+			ShouldEvade = false;
+
+			if (!Controller)
+			{
+				// 플레이어가 포함된 경우 controller 가 없을 수 있음
+				continue;
+			}
+
+			Controller->SetFocalPoint(HealTarget->GetActorLocation());
+
+			if (Character->GetCurrentHealth() <= Character->GetMaxHealth() * 0.5)
+			{
+				// 피가 별로 없을 때 확률적으로 회피 시전
+				if (FCustomProbabilityUtilities::IsProbabilitySuccessful(EvasionProbability))
+					ShouldEvade = true;
+			}
+
+			if (ShouldEvade)
+			{
+				FVector RandomEvasionPoint = FCustomProbabilityUtilities::GenerateRandomSphericalPoint();
+
+				Controller->MoveToLocation(Character->GetActorLocation() + RandomEvasionPoint);
+			}
+			else
+			{
+				if (Distance < Character->GetRange())
+				{
+					Controller->StopMovement();
+					Character->Act();
+				}
+				else
+				{
+					Controller->MoveToLocation(HealTarget->GetActorLocation());
+				}
+			}
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("AClusterController::TacticsHealerHeal: Heal target is not found."));
+	}
 }
 
 EDealerBehaviorState AClusterController::GetDealerBehaviorState() const
@@ -165,7 +230,7 @@ EDealerBehaviorState AClusterController::GetDealerBehaviorState() const
 
 EHealerBehaviorState AClusterController::GetHealerBehaviorState() const
 {
-	return EHealerBehaviorState::None;
+	return EHealerBehaviorState::Heal;
 }
 
 ETankBehaviorState AClusterController::GetTankBehaviorState() const
@@ -216,6 +281,14 @@ void AClusterController::RunDealerBehaviorTree()
 
 void AClusterController::RunHealerBehaviorTree()
 {
+	EHealerBehaviorState HealerBehaviorState = GetHealerBehaviorState();
+
+	switch (HealerBehaviorState)
+	{
+	case EHealerBehaviorState::Heal:
+		TacticsHealerHeal();
+		break;
+	}
 }
 
 void AClusterController::RunTankBehaviorTree()
@@ -272,14 +345,27 @@ void AClusterController::MoveTankToDefenseLine(const FVector& StartLocation, con
 			Controller->MoveToLocation(StartLocation + StartToTarget * DefenseLineOffset + (i - int(TankArray.Num() / 2)) * OrthogonalDirection * Interval);
 			Controller->SetFocalPoint(LookAtLocation);
 		}
-		else
-		{
-			UE_LOG(LogTemp, Warning, TEXT("AClusterController::Test: AIController is not found."));
-		}
 	}
 }
 
 ABaseCharacter* AClusterController::GetAttackTarget(TArray<ABaseCharacter*>& Characters) const
+{
+	return GetMostProperTarget(Characters, AttackPriority);
+}
+
+ABaseCharacter* AClusterController::GetHealTarget()
+{
+	// 탱, 딜, 힐 전부 체력 확인 후 가장 체력 적은 대상 반환
+	CachedHealTargets.Reset();
+
+	CachedHealTargets.Add(GetMostProperTarget(SelfCluster->GetDealerArray(), HealPriority));
+	CachedHealTargets.Add(GetMostProperTarget(SelfCluster->GetHealerArray(), HealPriority));
+	CachedHealTargets.Add(GetMostProperTarget(SelfCluster->GetTankArray(), HealPriority));
+	
+	return GetMostProperTarget(CachedHealTargets, HealPriority);
+}
+
+ABaseCharacter* AClusterController::GetMostProperTarget(const TArray<ABaseCharacter*>& Characters, TFunctionRef<bool(const ABaseCharacter*, const ABaseCharacter*)> Condition) const
 {
 	ABaseCharacter* Target = nullptr;
 
@@ -287,7 +373,8 @@ ABaseCharacter* AClusterController::GetAttackTarget(TArray<ABaseCharacter*>& Cha
 	{
 		if (Target)
 		{
-			if (Target->GetCurrentHealth() > Character->GetCurrentHealth())
+			// Character 우선 순위 > Target 우선순위 일 때 Target 변경
+			if (Character && Condition(Target, Character))
 				Target = Character;
 		}
 		else
@@ -295,8 +382,21 @@ ABaseCharacter* AClusterController::GetAttackTarget(TArray<ABaseCharacter*>& Cha
 			Target = Character;
 		}
 	}
-
 	return Target;
+}
+
+bool AClusterController::HealPriority(const ABaseCharacter* Target, const ABaseCharacter* Character)
+{
+	// HP 가 작은 경우 Character 의 힐 우선순위 인정
+	if (Target->GetCurrentHealth() > Character->GetCurrentHealth()) return true;
+	return false;
+}
+
+bool AClusterController::AttackPriority(const ABaseCharacter* Target, const ABaseCharacter* Character)
+{
+	// HP 가 작은 경우 Character 의 공격 우선순위 인정
+	if (Target->GetCurrentHealth() > Character->GetCurrentHealth()) return true;
+	return false;
 }
 
 void AClusterController::Tick(float DeltaTime)
@@ -308,5 +408,6 @@ void AClusterController::Tick(float DeltaTime)
 	{
 		RunTankBehaviorTree();
 		RunDealerBehaviorTree();
+		RunHealerBehaviorTree();
 	}
 }
