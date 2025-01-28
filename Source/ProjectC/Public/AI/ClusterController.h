@@ -8,6 +8,7 @@
 #include "Enums/HealerBehaviorState.h"
 #include "Enums/TankBehaviorState.h"
 #include "Navigation/PathFollowingComponent.h"
+#include "Math/UnrealMathUtility.h"
 #include "ClusterController.generated.h"
 
 
@@ -21,8 +22,12 @@ class PROJECTC_API AClusterController : public AActor
 public:
 	AClusterController();
 	void Possess(UCluster* InSelfCluster);
+	// 상대 딜러 딜각 차단 전술
 	void TacticsTankDealDefense();
+	// Healer -> Target 힐각 차단 전술
 	void TacticsTankHealDefense(TArray<ABaseCharacter*>& Healer, TArray<ABaseCharacter*>& Target);
+	// 아군 딜러 공격 전술
+	void TacticsDealerAttack();
 
 	EDealerBehaviorState GetDealerBehaviorState() const;
 	EHealerBehaviorState GetHealerBehaviorState() const;
@@ -32,7 +37,8 @@ public:
 	void RunHealerBehaviorTree();
 	void RunTankBehaviorTree();
 
-	void MoveTankToDefenseLine(FVector StartLocation, FVector EndLocation, FVector LookAtLocation, float Ratio, float Interval, TFunction<void(FAIRequestID, const FPathFollowingResult&)> OnArrivalCallback = nullptr);
+	void MoveTankToDefenseLine(const FVector& StartLocation, const FVector& EndLocation, const FVector& LookAtLocation, float Ratio, float Interval, TFunction<void(FAIRequestID, const FPathFollowingResult&)> OnArrivalCallback = nullptr);
+	ABaseCharacter* GetAttackTarget(TArray<ABaseCharacter*>& Characters) const;
 
 protected:
 	virtual void Tick(float DeltaTime) override;

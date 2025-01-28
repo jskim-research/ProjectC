@@ -39,6 +39,8 @@ void UCoreGameInstance::AddUnitToCluster(ABaseCharacter* InCharacter, ERoleType 
 void UCoreGameInstance::SetPlayer(ABaseCharacter* InPlayer)
 {
 	Player = InPlayer;
+	Player->SetMaxHealth(50);
+	Player->SetCurrentHealth(50);
 
 	AllyCluster->AddUnit(Player, ERoleType::Healer);
 }

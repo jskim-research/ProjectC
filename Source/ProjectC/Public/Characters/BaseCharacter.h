@@ -27,12 +27,21 @@ public:
 	virtual void Hit();
 	virtual void Die();
 
+	void SetMaxHealth(float InMaxHealth);
+	float GetMaxHealth() const;
+
+	void SetCurrentHealth(float InCurrentHealth);
+	float GetCurrentHealth() const;
+
+	void SetRange(float InRange);
+	float GetRange() const;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	float MaxHealth;
 	float CurrentHealth;
 
-
-
+	// 사정거리
+	float Range;
 };

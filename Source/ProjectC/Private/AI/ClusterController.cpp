@@ -3,7 +3,7 @@
 
 #include "AI/ClusterController.h"
 #include "AIController.h"
-#include "Kismet/KismetMathLibrary.h"
+#include "CustomMathUtils/CustomProbabilityUtilities.h"
 #include "Data/Cluster.h"
 
 AClusterController::AClusterController()
@@ -90,9 +90,77 @@ void AClusterController::TacticsTankHealDefense(TArray<ABaseCharacter*>& Healer,
 	}
 }
 
+void AClusterController::TacticsDealerAttack()
+{
+	// 공격 대상 선정
+	UCluster* TargetCluster = SelfCluster->GetTargetCluster();
+	ABaseCharacter* AttackTarget = nullptr;
+	float Distance;
+	bool ShouldEvade = false;
+	AAIController* Controller;
+	int32 EvasionProbability = 50;  // %, 회피 기동 시전할 확률
+
+	if (!TargetCluster->GetHealerArray().IsEmpty())
+	{
+		AttackTarget = GetAttackTarget(TargetCluster->GetHealerArray());
+	}
+	else if (!TargetCluster->GetDealerArray().IsEmpty())
+	{
+		AttackTarget = GetAttackTarget(TargetCluster->GetDealerArray());
+	}
+	else if (!TargetCluster->GetTankArray().IsEmpty())
+	{
+		AttackTarget = GetAttackTarget(TargetCluster->GetTankArray());
+	}
+
+	if (AttackTarget)
+	{
+		for (ABaseCharacter* Character : SelfCluster->GetDealerArray())
+		{
+			Controller = Cast<AAIController>(Character->GetController());
+			Distance = FVector::Distance(Character->GetActorLocation(), AttackTarget->GetActorLocation());
+			ShouldEvade = false;
+
+			Controller->SetFocalPoint(AttackTarget->GetActorLocation());
+
+			if (Character->GetCurrentHealth() <= Character->GetMaxHealth() * 0.5)
+			{
+				// 피가 별로 없을 때 확률적으로 회피 시전
+				if (FCustomProbabilityUtilities::IsProbabilitySuccessful(EvasionProbability))
+					ShouldEvade = true;
+			}
+
+			if (ShouldEvade)
+			{
+				FVector RandomEvasionPoint = FCustomProbabilityUtilities::GenerateRandomSphericalPoint();
+
+				Controller->MoveToLocation(Character->GetActorLocation() + RandomEvasionPoint);
+			}
+			else 
+			{
+				if (Distance < Character->GetRange())
+				{
+					Controller->StopMovement();
+					Character->Act();
+				}
+				else
+				{
+					Controller->MoveToLocation(AttackTarget->GetActorLocation());
+				}
+			}
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("AClusterController::TacticsDealerAttack: Attack target is not found."));
+	}
+
+	
+}
+
 EDealerBehaviorState AClusterController::GetDealerBehaviorState() const
 {
-	return EDealerBehaviorState::None;
+	return EDealerBehaviorState::Attack;
 }
 
 EHealerBehaviorState AClusterController::GetHealerBehaviorState() const
@@ -136,7 +204,14 @@ ETankBehaviorState AClusterController::GetTankBehaviorState() const
 
 void AClusterController::RunDealerBehaviorTree()
 {
-	
+	EDealerBehaviorState DealerBehaviorState = GetDealerBehaviorState();
+
+	switch (DealerBehaviorState)
+	{
+	case EDealerBehaviorState::Attack:
+		TacticsDealerAttack();
+		break;
+	}
 }
 
 void AClusterController::RunHealerBehaviorTree()
@@ -167,7 +242,7 @@ void AClusterController::RunTankBehaviorTree()
 	}
 }
 
-void AClusterController::MoveTankToDefenseLine(FVector StartLocation, FVector EndLocation, FVector LookAtLocation, float Ratio, float Interval, TFunction<void(FAIRequestID, const FPathFollowingResult&)> OnArrivalCallback)
+void AClusterController::MoveTankToDefenseLine(const FVector& StartLocation, const FVector& EndLocation, const FVector& LookAtLocation, float Ratio, float Interval, TFunction<void(FAIRequestID, const FPathFollowingResult&)> OnArrivalCallback)
 {
 	FVector StartToTarget = (EndLocation - StartLocation);
 	StartToTarget.Normalize();
@@ -204,6 +279,26 @@ void AClusterController::MoveTankToDefenseLine(FVector StartLocation, FVector En
 	}
 }
 
+ABaseCharacter* AClusterController::GetAttackTarget(TArray<ABaseCharacter*>& Characters) const
+{
+	ABaseCharacter* Target = nullptr;
+
+	for (ABaseCharacter* Character : Characters)
+	{
+		if (Target)
+		{
+			if (Target->GetCurrentHealth() > Character->GetCurrentHealth())
+				Target = Character;
+		}
+		else
+		{
+			Target = Character;
+		}
+	}
+
+	return Target;
+}
+
 void AClusterController::Tick(float DeltaTime)
 {
 	// 상태 체크 => 전술 변경
@@ -212,6 +307,6 @@ void AClusterController::Tick(float DeltaTime)
 	if (SelfCluster && SelfCluster->GetTargetCluster())
 	{
 		RunTankBehaviorTree();
-
+		RunDealerBehaviorTree();
 	}
 }

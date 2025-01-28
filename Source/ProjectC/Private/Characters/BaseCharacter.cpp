@@ -43,3 +43,33 @@ void ABaseCharacter::Hit()
 void ABaseCharacter::Die()
 {
 }
+
+void ABaseCharacter::SetMaxHealth(float InMaxHealth)
+{
+	MaxHealth = InMaxHealth;
+}
+
+float ABaseCharacter::GetMaxHealth() const
+{
+	return MaxHealth;
+}
+
+void ABaseCharacter::SetCurrentHealth(float InCurrentHealth)
+{
+	CurrentHealth = InCurrentHealth;
+}
+
+float ABaseCharacter::GetCurrentHealth() const
+{
+	return CurrentHealth;
+}
+
+void ABaseCharacter::SetRange(float InRange)
+{
+	Range = InRange;
+}
+
+float ABaseCharacter::GetRange() const
+{
+	return Range;
+}

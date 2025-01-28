@@ -126,12 +126,22 @@ void UGridSpawner::Spawn(UWorld* InWorld, FVector Position, const FGridTile& Til
 			break;
 		case ERoleType::Tank:
 			SpawnedCharacter = InWorld->SpawnActor<ABaseCharacter>(*TankBlueprint, Position, Rotation, SpawnParams);
+			// 임의로 지금은 HP 여기서 바로 설정 (나중에 구조 좀 바꿔야함)
+			SpawnedCharacter->SetMaxHealth(200);
+			SpawnedCharacter->SetCurrentHealth(200);
+			SpawnedCharacter->SetRange(1000);
 			break;
 		case ERoleType::Dealer:
 			SpawnedCharacter = InWorld->SpawnActor<ABaseCharacter>(DealerBlueprint, Position, Rotation, SpawnParams);
+			SpawnedCharacter->SetMaxHealth(100);
+			SpawnedCharacter->SetCurrentHealth(50);
+			SpawnedCharacter->SetRange(1000);
 			break;
 		case ERoleType::Healer:
 			SpawnedCharacter = InWorld->SpawnActor<ABaseCharacter>(HealerBlueprint, Position, Rotation, SpawnParams);
+			SpawnedCharacter->SetMaxHealth(150);
+			SpawnedCharacter->SetCurrentHealth(150);
+			SpawnedCharacter->SetRange(1000);
 			break;
 	}
 
