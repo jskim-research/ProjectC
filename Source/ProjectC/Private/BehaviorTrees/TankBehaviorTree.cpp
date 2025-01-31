@@ -6,10 +6,27 @@
 
 void UTankBehaviorTree::Run(UCluster* AllyCluster)
 {
-	UCluster* EnemyCluster = AllyCluster->GetTargetCluster();
-	// TacticsTankDealDefense(AllyCluster, EnemyCluster);
+	if (AllyCluster->GetTankNum() == 0)
+	{
+		// TankBehaviorTree 의 핵심인 Tank 가 없는 경우 behavior tree 수행할 이유 없음
+		return;
+	}
 
-	TacticsTankHealDefense(AllyCluster->GetTankArray(), EnemyCluster->GetHealerArray(), EnemyCluster->GetTankArray());
+	AClusterController* Controller = AllyCluster->GetClusterController();
+
+	switch (Controller->GetClusterCommand())
+	{
+	case EClusterCommand::Hold:
+		TacticsHold(AllyCluster);
+		break;
+
+	case EClusterCommand::Charge:
+		break;
+	}
+
+	// UCluster* EnemyCluster = AllyCluster->GetTargetCluster();
+	// TacticsTankDealDefense(AllyCluster, EnemyCluster);
+	// TacticsTankHealDefense(AllyCluster->GetTankArray(), EnemyCluster->GetHealerArray(), EnemyCluster->GetTankArray());
 
 	/*
 	ETankBehaviorState TankBehaviorState = GetTankBehaviorState();
@@ -105,39 +122,20 @@ void UTankBehaviorTree::TacticsTankHealDefense(TArray<ABaseCharacter*>& AllyTank
 	}
 }
 
-
-void UTankBehaviorTree::MoveToDefenseLine(TArray<ABaseCharacter*>& Characters, const FVector& StartLocation, const FVector& EndLocation, const FVector& LookAtLocation, float Ratio, float Interval, TFunction<void(FAIRequestID, const FPathFollowingResult&)> OnArrivalCallback)
+void UTankBehaviorTree::TacticsHold(UCluster* AllyCluster)
 {
-	FVector StartToTarget = (EndLocation - StartLocation);
-	StartToTarget.Normalize();
-	FVector OrthogonalDirection = StartToTarget;
-	OrthogonalDirection.X = StartToTarget.Y;
-	OrthogonalDirection.Y = -StartToTarget.X;
-	OrthogonalDirection.Normalize();
+	// 상대 군집 평균과 아군 군집 평균 사이를 defense line 으로 정하고 holding
+	UCluster* EnemyCluster = AllyCluster->GetTargetCluster();
 
-	// 시작점 - 끝점 에서 Ratio 부분에 방어선 구축 (Ratio = 0.5 인 경우 힐러와 Target 중앙)
-	float DefenseLineOffset = FVector::Distance(StartLocation, EndLocation) * Ratio;
+	// 상대 군집 또는 아군 군집이 없는 경우 전략 수행 X
+	if (AllyCluster->GetAllUnitNum() == 0 || EnemyCluster->GetAllUnitNum() == 0)
+		return;
 
-	// 캐릭터 움직여서 실제 방어선 구축
-	for (int i = 0; i < Characters.Num(); i++)
-	{
-		AAIController* Controller = Cast<AAIController>(Characters[i]->GetController());
+	FVector AllyAverageLocation = AllyCluster->GetClusterAvergeLocation();
+	FVector EnemyAverageLocation = EnemyCluster->GetClusterAvergeLocation();
 
-		if (Controller)
-		{
-			if (OnArrivalCallback)
-			{
-				Controller->GetPathFollowingComponent()->OnRequestFinished.AddLambda(
-					OnArrivalCallback
-				);
-
-			}
-			Controller->MoveToLocation(StartLocation + StartToTarget * DefenseLineOffset + (i - int(Characters.Num() / 2)) * OrthogonalDirection * Interval);
-			Controller->SetFocalPoint(LookAtLocation);
-		}
-	}
+	MoveToDefenseLine(AllyCluster->GetTankArray(), AllyAverageLocation, EnemyAverageLocation, EnemyAverageLocation, 0.4, 300);
 }
-
 
 ETankBehaviorState UTankBehaviorTree::GetTankBehaviorState(UCluster* AllyCluster, UCluster* EnemyCluster) const
 {

@@ -18,7 +18,7 @@ AClusterController::AClusterController()
 	HealerBehaviorTree = NewObject<UHealerBehaviorTree>();
 	TankBehaviorTree = NewObject<UTankBehaviorTree>();
 
-	ClusterCommand = EClusterCommand::Holding;
+	ClusterCommand = EClusterCommand::Hold;
 }
 
 void AClusterController::Possess(UCluster* InSelfCluster)

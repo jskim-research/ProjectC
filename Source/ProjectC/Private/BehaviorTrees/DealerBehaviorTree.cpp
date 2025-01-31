@@ -6,7 +6,24 @@
 
 void UDealerBehaviorTree::Run(UCluster* AllyCluster)
 {
-	TacticsDealerAttack(AllyCluster);
+	if (AllyCluster->GetDealerNum() == 0)
+	{
+		return;
+	}
+
+	AClusterController* Controller = AllyCluster->GetClusterController();
+
+	switch (Controller->GetClusterCommand())
+	{
+	case EClusterCommand::Hold:
+		TacticsHold(AllyCluster);
+		break;
+
+	case EClusterCommand::Charge:
+		break;
+	}
+
+	// TacticsDealerAttack(AllyCluster);
 	/*
 	EDealerBehaviorState DealerBehaviorState = GetDealerBehaviorState();
 
@@ -90,6 +107,24 @@ void UDealerBehaviorTree::TacticsDealerAttack(UCluster* AllyCluster)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("UDealerBehaviorTree::TacticsDealerAttack: Attack target is not found."));
 	}
+}
+
+void UDealerBehaviorTree::TacticsHold(UCluster* AllyCluster)
+{
+	if (AllyCluster->GetTankNum() > 0)
+	{
+		// 탱커 군집 평균점과의 거리가 0.5 * Range ~ 0.75 * Range 이도록 조정
+		MoveBehindDefenseLine(AllyCluster->GetDealerArray(), AllyCluster->GetTankAverageLocation());
+	}
+	else
+	{
+		// 탱커 군집이 없으면 딜러 군집이 최전선
+		FVector AllyAverageLocation = AllyCluster->GetClusterAvergeLocation();
+		FVector EnemyAverageLocation = AllyCluster->GetTargetCluster()->GetClusterAvergeLocation();
+
+		MoveToDefenseLine(AllyCluster->GetDealerArray(), AllyAverageLocation, EnemyAverageLocation, EnemyAverageLocation, 0.4, 300);
+	}
+	
 }
 
 ABaseCharacter* UDealerBehaviorTree::GetAttackTarget(TArray<ABaseCharacter*>& Characters) const

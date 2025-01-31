@@ -2,6 +2,7 @@
 
 
 #include "Data/Cluster.h"
+#include <array>
 
 UCluster::UCluster()
 {
@@ -76,4 +77,48 @@ TArray<ABaseCharacter*>& UCluster::GetDealerArray()
 AClusterController* UCluster::GetClusterController()
 {
 	return ClusterController;
+}
+
+FVector UCluster::GetClusterAvergeLocation() const
+{
+	// 메모리 복사 없이 다수 array 엮는 방식
+	// CalculateAverageLocation 의 경우 Actor = nullptr 인 경우 계산에서 제외한 것 유의
+	std::array<TArrayView<ABaseCharacter *const>, 3> CombinedViews = { MakeArrayView(DealerArray), MakeArrayView(HealerArray), MakeArrayView(TankArray) };
+	return FCustomClusterUtilities::CalculateAverageLocation<ABaseCharacter, 3>(CombinedViews);
+}
+
+FVector UCluster::GetDealerAverageLocation() const
+{
+	return FCustomClusterUtilities::CalculateAverageLocation(DealerArray);
+}
+
+FVector UCluster::GetHealerAverageLocation() const
+{
+	return FCustomClusterUtilities::CalculateAverageLocation(HealerArray);
+}
+
+FVector UCluster::GetTankAverageLocation() const
+{
+	return FCustomClusterUtilities::CalculateAverageLocation(TankArray);
+}
+
+uint32 UCluster::GetAllUnitNum()
+{
+	// Actor = nullptr 인 경우 고려하지 않음
+	return GetDealerNum() + GetHealerNum() + GetTankNum();
+}
+
+uint32 UCluster::GetDealerNum()
+{
+	return DealerArray.Num();
+}
+
+uint32 UCluster::GetHealerNum()
+{
+	return HealerArray.Num();
+}
+
+uint32 UCluster::GetTankNum()
+{
+	return TankArray.Num();
 }

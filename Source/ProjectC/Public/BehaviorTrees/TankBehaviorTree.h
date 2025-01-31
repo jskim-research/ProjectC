@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "BehaviorTrees/BaseBehaviorTree.h"
-#include "AIController.h"
 #include "TankBehaviorTree.generated.h"
 
 /**
@@ -23,7 +22,7 @@ protected:
 	void TacticsTankDealDefense(UCluster* AllyCluster, UCluster* EnemyCluster);
 	// AllyTank 가 EnemyHealer -> EnemyTarget 힐 차단
 	void TacticsTankHealDefense(TArray<ABaseCharacter*>& AllyTank, TArray<ABaseCharacter*>& EnemyHealer, TArray<ABaseCharacter*>& EnemyTarget);
-	void MoveToDefenseLine(TArray<ABaseCharacter*>& Characters, const FVector& StartLocation, const FVector& EndLocation, const FVector& LookAtLocation, float Ratio, float Interval, TFunction<void(FAIRequestID, const FPathFollowingResult&)> OnArrivalCallback = nullptr);
+	void TacticsHold(UCluster* AllyCluster);
 
 	ETankBehaviorState GetTankBehaviorState(UCluster* AllyCluster, UCluster* EnemyCluster) const;
 };

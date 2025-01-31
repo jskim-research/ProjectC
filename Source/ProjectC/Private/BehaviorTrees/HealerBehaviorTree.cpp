@@ -6,7 +6,24 @@
 
 void UHealerBehaviorTree::Run(UCluster* AllyCluster)
 {
-	TacticsHealerHeal(AllyCluster);
+	if (AllyCluster->GetHealerNum() == 0)
+	{
+		return;
+	}
+
+	AClusterController* Controller = AllyCluster->GetClusterController();
+
+	switch (Controller->GetClusterCommand())
+	{
+	case EClusterCommand::Hold:
+		TacticsHold(AllyCluster);
+		break;
+
+	case EClusterCommand::Charge:
+		break;
+	}
+
+	// TacticsHealerHeal(AllyCluster);
 	/*
 	EHealerBehaviorState HealerBehaviorState = GetHealerBehaviorState();
 
@@ -78,6 +95,22 @@ void UHealerBehaviorTree::TacticsHealerHeal(UCluster* AllyCluster)
 	else
 	{
 		UE_LOG(LogTemp, Warning, TEXT("UHealerBehaviorTree::TacticsHealerHeal: Heal target is not found."));
+	}
+}
+
+void UHealerBehaviorTree::TacticsHold(UCluster* AllyCluster)
+{
+	if (AllyCluster->GetDealerNum() > 0)
+	{
+		MoveBehindDefenseLine(AllyCluster->GetHealerArray(), AllyCluster->GetDealerAverageLocation());
+	}
+	else if (AllyCluster->GetTankNum() > 0)
+	{
+		MoveBehindDefenseLine(AllyCluster->GetHealerArray(), AllyCluster->GetTankAverageLocation());
+	}
+	else
+	{
+
 	}
 }
 

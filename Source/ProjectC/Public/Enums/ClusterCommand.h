@@ -7,7 +7,7 @@ enum class EClusterCommand : uint8
 {
     None UMETA(DisplayName = "None"),
     // 전선 유지
-    Holding UMETA(DisplayName = "Holding"),
+    Hold UMETA(DisplayName = "Hold"),
     // 돌진
     Charge UMETA(DisplayName = "Charge"),
 };

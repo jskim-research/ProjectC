@@ -7,6 +7,7 @@
 #include "AI/ClusterController.h"
 #include "Characters/BaseCharacter.h"
 #include "Enums/RoleType.h"
+#include "CustomMathUtils/CustomClusterUtilities.h"
 #include "Cluster.generated.h"
 
 
@@ -29,6 +30,16 @@ public:
 	TArray<ABaseCharacter*>& GetDealerArray();
 	AClusterController* GetClusterController();
 
+	FVector GetClusterAvergeLocation() const;
+	FVector GetDealerAverageLocation() const;
+	FVector GetHealerAverageLocation() const;
+	FVector GetTankAverageLocation() const;
+
+	uint32 GetAllUnitNum();
+	uint32 GetDealerNum();
+	uint32 GetHealerNum();
+	uint32 GetTankNum();
+
 private:
 	UPROPERTY()
 	AClusterController* ClusterController;
@@ -44,4 +55,5 @@ private:
 
 	UPROPERTY()
 	UCluster* TargetCluster;
+
 };

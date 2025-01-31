@@ -18,6 +18,7 @@ public:
 	virtual void Run(UCluster* AllyCluster) override;
 	// 아군 힐러 힐 전술
 	void TacticsHealerHeal(UCluster* AllyCluster);
+	void TacticsHold(UCluster* AllyCluster);
 	ABaseCharacter* GetHealTarget(UCluster* AllyCluster);
 	EHealerBehaviorState GetHealerBehaviorState() const;
 

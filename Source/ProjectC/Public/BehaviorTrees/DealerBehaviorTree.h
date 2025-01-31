@@ -19,6 +19,7 @@ public:
 
 	// 아군 딜러 공격 전술
 	void TacticsDealerAttack(UCluster* AllyCluster);
+	void TacticsHold(UCluster* AllyCluster);
 	ABaseCharacter* GetAttackTarget(TArray<ABaseCharacter*>& Characters) const;
 	
 	EDealerBehaviorState GetDealerBehaviorState() const;
