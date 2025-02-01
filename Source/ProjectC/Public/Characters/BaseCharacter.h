@@ -38,12 +38,19 @@ public:
 
 	void SetBaseColor(FLinearColor& Color);
 
+	virtual void SetIsAlly(bool InIsAlly);
+
+	UFUNCTION(BlueprintPure)
+	bool GetIsAlly() const;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	float MaxHealth;
-	float CurrentHealth;
+	float MaxHealth = 0;
+	float CurrentHealth = 0;
 
 	// 사정거리
-	float Range;
+	float Range = 0;
+
+	bool IsAlly = false;
 };

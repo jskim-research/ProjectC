@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Characters/NPCCharacter.h"
+#include "Components/StaticMeshComponent.h"
 #include "NPCTankCharacter.generated.h"
 
 /**
@@ -14,4 +15,10 @@ class PROJECTC_API ANPCTankCharacter : public ANPCCharacter
 {
 	GENERATED_BODY()
 	
+protected:
+	virtual void BeginPlay() override;
+	virtual void SetIsAlly(bool InIsAlly) override;
+
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+	UStaticMeshComponent* Shield;
 };

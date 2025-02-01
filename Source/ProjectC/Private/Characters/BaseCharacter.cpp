@@ -94,3 +94,13 @@ void ABaseCharacter::SetBaseColor(FLinearColor& Color)
 
 	DynamicMaterial->SetVectorParameterValue(FName("TeamColor"), Color);
 }
+
+void ABaseCharacter::SetIsAlly(bool InIsAlly)
+{
+	IsAlly = InIsAlly;
+}
+
+bool ABaseCharacter::GetIsAlly() const
+{
+	return IsAlly;
+}

@@ -162,5 +162,6 @@ void UGridSpawner::Spawn(UWorld* InWorld, FVector Position, const FGridTile& Til
 
 		FLinearColor TeamColor = (TileInfo.IsAlly) ? FLinearColor::Blue : FLinearColor::Red;
 		SpawnedCharacter->SetBaseColor(TeamColor);
+		SpawnedCharacter->SetIsAlly(TileInfo.IsAlly);
 	}
 }

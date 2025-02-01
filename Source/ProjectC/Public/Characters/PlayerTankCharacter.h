@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Characters/PlayerCharacter.h"
 #include "Components/BoxComponent.h"
+#include "Components/StaticMeshComponent.h"
 #include "PlayerTankCharacter.generated.h"
 
 /**
@@ -17,8 +18,12 @@ class PROJECTC_API APlayerTankCharacter : public APlayerCharacter
 
 public:
 	APlayerTankCharacter();
-	virtual void BeginPlay() override;
 	virtual void Act() override;
 
-private:
+protected:
+	virtual void BeginPlay() override;
+	virtual void SetIsAlly(bool InIsAlly) override;
+
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+	UStaticMeshComponent* Shield;
 };

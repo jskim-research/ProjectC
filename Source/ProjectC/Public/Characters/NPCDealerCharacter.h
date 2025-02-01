@@ -20,5 +20,8 @@ public:
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Projectile")
-	TSubclassOf<AActor> ProjectileBlueprint;
+	TSubclassOf<AActor> AllyProjectileBlueprint;
+
+	UPROPERTY(EditAnywhere, Category = "Projectile")
+	TSubclassOf<AActor> EnemyProjectileBlueprint;
 };

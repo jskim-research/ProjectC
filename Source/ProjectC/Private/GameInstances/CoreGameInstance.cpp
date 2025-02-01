@@ -40,7 +40,7 @@ void UCoreGameInstance::SetPlayer(ABaseCharacter* InPlayer)
 {
 	Player = InPlayer;
 	Player->SetMaxHealth(50);
-	Player->SetCurrentHealth(50);
+	Player->SetCurrentHealth(25);
 
 	FLinearColor TeamColor = FLinearColor::Blue;
 	Player->SetBaseColor(TeamColor);

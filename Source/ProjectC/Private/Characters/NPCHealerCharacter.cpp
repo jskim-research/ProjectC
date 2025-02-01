@@ -5,10 +5,17 @@
 
 ANPCHealerCharacter::ANPCHealerCharacter()
 {
-    static ConstructorHelpers::FClassFinder<AActor> ProjectileClassFinder(TEXT("/Game/Blueprints/Projectiles/BP_Projectile"));
-    if (ProjectileClassFinder.Succeeded())
+    static ConstructorHelpers::FClassFinder<AActor> AllyProjectileClassFinder(TEXT("/Game/Blueprints/Projectiles/BP_AllyProjectile"));
+    static ConstructorHelpers::FClassFinder<AActor> EnemyProjectileClassFinder(TEXT("/Game/Blueprints/Projectiles/BP_EnemyProjectile"));
+
+    if (AllyProjectileClassFinder.Succeeded())
     {
-        ProjectileBlueprint = ProjectileClassFinder.Class;
+        AllyProjectileBlueprint = AllyProjectileClassFinder.Class;
+    }
+
+    if (EnemyProjectileClassFinder.Succeeded())
+    {
+        EnemyProjectileBlueprint = EnemyProjectileClassFinder.Class;
     }
 }
 
@@ -19,5 +26,13 @@ void ANPCHealerCharacter::Act()
     FActorSpawnParameters SpawnParams;
     SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
     SpawnParams.TransformScaleMethod = ESpawnActorScaleMethod::MultiplyWithRoot;
-    GetWorld()->SpawnActor(ProjectileBlueprint, &Location, &Rotation, SpawnParams);
+
+    if (IsAlly)
+    {
+        GetWorld()->SpawnActor(AllyProjectileBlueprint, &Location, &Rotation, SpawnParams);
+    }
+    else
+    {
+        GetWorld()->SpawnActor(EnemyProjectileBlueprint, &Location, &Rotation, SpawnParams);
+    }
 }
