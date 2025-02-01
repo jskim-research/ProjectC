@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Characters/BaseCharacter.h"
+#include "Components/WidgetComponent.h"
+#include "UI/CharacterInfoWidget.h"
 #include "NPCCharacter.generated.h"
 
 /**
@@ -15,7 +17,18 @@ class PROJECTC_API ANPCCharacter : public ABaseCharacter
 	GENERATED_BODY()
 	
 public:
+	ANPCCharacter();
+	virtual void SetMaxHealth(float InMaxHealth) override;
+	virtual void SetCurrentHealth(float InCurrentHealth) override;
+	virtual void SetUIVisibility(bool InVisibility) override;
 
-private:
+protected:
+	virtual void BeginPlay() override;
 
+
+	UPROPERTY(EditAnywhere)
+	UWidgetComponent* InfoWidgetComponent;
+
+	UPROPERTY(VisibleAnywhere)
+	UCharacterInfoWidget* InfoWidget;
 };

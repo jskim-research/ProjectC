@@ -16,6 +16,11 @@ void ANPCTankCharacter::BeginPlay()
             UE_LOG(LogTemp, Warning, TEXT("Shield does not exist"));
         }
     }
+
+    if (InfoWidget)
+    {
+        InfoWidget->SetName("Tank");
+    }
 }
 
 void ANPCTankCharacter::SetIsAlly(bool InIsAlly)

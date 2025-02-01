@@ -27,10 +27,10 @@ public:
 	virtual void Hit();
 	virtual void Die();
 
-	void SetMaxHealth(float InMaxHealth);
+	virtual void SetMaxHealth(float InMaxHealth);
 	float GetMaxHealth() const;
 
-	void SetCurrentHealth(float InCurrentHealth);
+	virtual void SetCurrentHealth(float InCurrentHealth);
 	float GetCurrentHealth() const;
 
 	void SetRange(float InRange);
@@ -42,6 +42,8 @@ public:
 
 	UFUNCTION(BlueprintPure)
 	bool GetIsAlly() const;
+
+	virtual void SetUIVisibility(bool InVisibility);
 
 protected:
 	// Called when the game starts or when spawned

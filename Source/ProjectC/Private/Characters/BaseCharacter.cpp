@@ -104,3 +104,8 @@ bool ABaseCharacter::GetIsAlly() const
 {
 	return IsAlly;
 }
+
+void ABaseCharacter::SetUIVisibility(bool InVisibility)
+{
+	// Do nothing
+}

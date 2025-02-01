@@ -55,6 +55,7 @@ EClusterCommand AClusterController::GetClusterCommand() const
 
 void AClusterController::Tick(float DeltaTime)
 {
+	Super::Tick(DeltaTime);
 	// 상태 체크 => 전술 변경
 	// 이벤트 기반으로 바꾸는 게 효율적일수도 (혼합해서 사용하거나)
 

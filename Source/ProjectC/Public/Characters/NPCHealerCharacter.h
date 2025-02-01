@@ -18,6 +18,9 @@ public:
 	ANPCHealerCharacter();
 	virtual void Act() override;
 
+protected:
+	virtual void BeginPlay() override;
+
 private:
 	UPROPERTY(EditAnywhere, Category = "Projectile")
 	TSubclassOf<AActor> AllyProjectileBlueprint;

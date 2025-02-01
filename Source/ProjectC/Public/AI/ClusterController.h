@@ -29,8 +29,8 @@ public:
 	AClusterController();
 	void Possess(UCluster* InSelfCluster);
 	void UpdateBlackboard();
-	const UClusterBlackboard* GetBlackboard() const;
 
+	const UClusterBlackboard* GetBlackboard() const;
 	EClusterCommand GetClusterCommand() const;
 
 protected:

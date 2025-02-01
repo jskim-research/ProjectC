@@ -36,3 +36,13 @@ void ANPCHealerCharacter::Act()
         GetWorld()->SpawnActor(EnemyProjectileBlueprint, &Location, &Rotation, SpawnParams);
     }
 }
+
+void ANPCHealerCharacter::BeginPlay()
+{
+    Super::BeginPlay();
+
+    if (InfoWidget)
+    {
+        InfoWidget->SetName("Healer");
+    }
+}

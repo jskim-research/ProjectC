@@ -19,6 +19,8 @@ public:
 	virtual void Act() override;
 
 private:
+	virtual void BeginPlay() override;
+
 	UPROPERTY(EditAnywhere, Category = "Projectile")
 	TSubclassOf<AActor> AllyProjectileBlueprint;
 

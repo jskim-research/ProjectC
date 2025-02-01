@@ -37,3 +37,13 @@ void ANPCDealerCharacter::Act()
         GetWorld()->SpawnActor(EnemyProjectileBlueprint, &Location, &Rotation, SpawnParams);
     }
 }
+
+void ANPCDealerCharacter::BeginPlay()
+{
+    Super::BeginPlay();
+    
+    if (InfoWidget)
+    {
+        InfoWidget->SetName("Dealer");
+    }
+}
