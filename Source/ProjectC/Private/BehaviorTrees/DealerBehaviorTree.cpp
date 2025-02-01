@@ -112,6 +112,7 @@ void UDealerBehaviorTree::TacticsDealerAttack(UCluster* AllyCluster)
 void UDealerBehaviorTree::TacticsHold(UCluster* AllyCluster)
 {
 	const UClusterBlackboard* EnemyBlackboard = AllyCluster->GetTargetCluster()->GetClusterController()->GetBlackboard();
+	AAIController* Controller;
 
 	if (AllyCluster->GetTankNum() > 0)
 	{
@@ -127,6 +128,50 @@ void UDealerBehaviorTree::TacticsHold(UCluster* AllyCluster)
 		MoveToDefenseLine(AllyCluster->GetDealerArray(), AllyAverageLocation, EnemyAverageLocation, EnemyAverageLocation, 0.4, 300);
 	}
 	
+	// 딜하기 (naive 하게 우선 구현)
+	for (ABaseCharacter* Dealer : AllyCluster->GetDealerArray())
+	{
+		// 자신으로부터 Range 내에 있으면서 가장 피가 적은 Unit 선택
+		ABaseCharacter* Target = nullptr;
+		float Range = Dealer->GetRange();
+
+		for (ABaseCharacter* Character : AllyCluster->GetTargetCluster()->GetDealerArray())
+		{
+			bool HasMorePriority = !Target || (Target->GetCurrentHealth() > Character->GetCurrentHealth() && FVector::Dist(Character->GetActorLocation(), Dealer->GetActorLocation()) <= Range);
+			if (HasMorePriority)
+			{
+				Target = Character;
+			}
+		}
+
+		for (ABaseCharacter* Character : AllyCluster->GetTargetCluster()->GetHealerArray())
+		{
+			bool HasMorePriority = !Target || (Target->GetCurrentHealth() > Character->GetCurrentHealth() && FVector::Dist(Character->GetActorLocation(), Dealer->GetActorLocation()) <= Range);
+			if (HasMorePriority)
+			{
+				Target = Character;
+			}
+		}
+
+		for (ABaseCharacter* Character : AllyCluster->GetTargetCluster()->GetTankArray())
+		{
+			bool HasMorePriority = !Target || (Target->GetCurrentHealth() > Character->GetCurrentHealth() && FVector::Dist(Character->GetActorLocation(), Dealer->GetActorLocation()) <= Range);
+			if (HasMorePriority)
+			{
+				Target = Character;
+			}
+		}
+
+		if (Target && Target != Dealer)
+		{
+			Controller = Cast<AAIController>(Dealer->GetController());
+			if (Controller)
+			{
+				Controller->SetFocalPoint(Target->GetActorLocation());
+				Dealer->Act();
+			}
+		}
+	}
 }
 
 ABaseCharacter* UDealerBehaviorTree::GetAttackTarget(TArray<ABaseCharacter*>& Characters) const

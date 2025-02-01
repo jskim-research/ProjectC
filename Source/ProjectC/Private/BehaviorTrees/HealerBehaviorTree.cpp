@@ -101,10 +101,10 @@ void UHealerBehaviorTree::TacticsHealerHeal(UCluster* AllyCluster)
 void UHealerBehaviorTree::TacticsHold(UCluster* AllyCluster)
 {
 	const UClusterBlackboard* EnemyBlackboard = AllyCluster->GetTargetCluster()->GetClusterController()->GetBlackboard();
+	AAIController* Controller;
 
 	if (AllyCluster->GetDealerNum() > 0)
-	{
-		
+	{	
 		MoveBehindDefenseLine(AllyCluster->GetHealerArray(), ClusterBlackboard->GetDealerAverageLocation(), EnemyBlackboard->GetClusterAverageLocation());
 	}
 	else if (AllyCluster->GetTankNum() > 0)
@@ -115,6 +115,52 @@ void UHealerBehaviorTree::TacticsHold(UCluster* AllyCluster)
 	{
 
 	}
+
+	// 힐하기 (naive 하게 우선 구현)
+	for (ABaseCharacter* Healer : AllyCluster->GetHealerArray())
+	{
+		// 자신으로부터 Range 내에 있으면서 가장 피가 적은 Unit 선택
+		ABaseCharacter* Target = nullptr;
+		float Range = Healer->GetRange();
+
+		for (ABaseCharacter* Character : AllyCluster->GetDealerArray())
+		{
+			bool HasMorePriority = !Target || (Target->GetCurrentHealth() > Character->GetCurrentHealth() && FVector::Dist(Character->GetActorLocation(), Healer->GetActorLocation()) <= Range);
+			if (HasMorePriority)
+			{
+				Target = Character;
+			}
+		}
+
+		for (ABaseCharacter* Character : AllyCluster->GetHealerArray())
+		{
+			bool HasMorePriority = !Target || (Target->GetCurrentHealth() > Character->GetCurrentHealth() && FVector::Dist(Character->GetActorLocation(), Healer->GetActorLocation()) <= Range);
+			if (HasMorePriority)
+			{
+				Target = Character;
+			}
+		}
+
+		for (ABaseCharacter* Character : AllyCluster->GetTankArray())
+		{
+			bool HasMorePriority = !Target || (Target->GetCurrentHealth() > Character->GetCurrentHealth() && FVector::Dist(Character->GetActorLocation(), Healer->GetActorLocation()) <= Range);
+			if (HasMorePriority)
+			{
+				Target = Character;
+			}
+		}
+
+		if (Target && Target != Healer)
+		{
+			Controller = Cast<AAIController>(Healer->GetController());
+			if (Controller)
+			{
+				Controller->SetFocalPoint(Target->GetActorLocation());
+				Healer->Act();
+			}
+		}
+	}
+	
 }
 
 ABaseCharacter* UHealerBehaviorTree::GetHealTarget(UCluster* AllyCluster)
