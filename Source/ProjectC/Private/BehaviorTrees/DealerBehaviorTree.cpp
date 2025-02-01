@@ -114,7 +114,7 @@ void UDealerBehaviorTree::TacticsHold(UCluster* AllyCluster)
 	if (AllyCluster->GetTankNum() > 0)
 	{
 		// 탱커 군집 평균점과의 거리가 0.5 * Range ~ 0.75 * Range 이도록 조정
-		MoveBehindDefenseLine(AllyCluster->GetDealerArray(), ClusterBlackboard->GetAllyTankAverageLocation());
+		MoveBehindDefenseLine(AllyCluster->GetDealerArray(), ClusterBlackboard->GetAllyTankAverageLocation(), ClusterBlackboard->GetEnemyClusterAverageLocation());
 	}
 	else
 	{

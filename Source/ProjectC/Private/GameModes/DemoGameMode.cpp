@@ -34,7 +34,7 @@ void ADemoGameMode::BeginPlay()
 		FGrid Map(5, 5);
 		Map(0, 4) = FGridTile(ERoleType::Dealer, false);
 		Map(0, 3) = FGridTile(ERoleType::Healer, false);
-		Map(0, 2) = FGridTile(ERoleType::Dealer, false);
+		Map(0, 2) = FGridTile(ERoleType::Dealer, true);
 
 		Map(1, 2) = FGridTile(ERoleType::Tank, false);
 		Map(0, 1) = FGridTile(ERoleType::Tank, false);

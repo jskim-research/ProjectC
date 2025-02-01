@@ -103,11 +103,11 @@ void UHealerBehaviorTree::TacticsHold(UCluster* AllyCluster)
 	if (AllyCluster->GetDealerNum() > 0)
 	{
 		
-		MoveBehindDefenseLine(AllyCluster->GetHealerArray(), ClusterBlackboard->GetAllyDealerAverageLocation());
+		MoveBehindDefenseLine(AllyCluster->GetHealerArray(), ClusterBlackboard->GetAllyDealerAverageLocation(), ClusterBlackboard->GetEnemyClusterAverageLocation());
 	}
 	else if (AllyCluster->GetTankNum() > 0)
 	{
-		MoveBehindDefenseLine(AllyCluster->GetHealerArray(), ClusterBlackboard->GetAllyTankAverageLocation());
+		MoveBehindDefenseLine(AllyCluster->GetHealerArray(), ClusterBlackboard->GetAllyTankAverageLocation(), ClusterBlackboard->GetEnemyClusterAverageLocation());
 	}
 	else
 	{

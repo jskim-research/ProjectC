@@ -57,7 +57,7 @@ void UBaseBehaviorTree::MoveToDefenseLine(TArray<ABaseCharacter*>& Characters, c
 	}
 }
 
-void UBaseBehaviorTree::MoveBehindDefenseLine(TArray<ABaseCharacter*>& Characters, const FVector& TargetLocation)
+void UBaseBehaviorTree::MoveBehindDefenseLine(TArray<ABaseCharacter*>& Characters, const FVector& DefenseLocation, const FVector& EnemyLocation)
 {
 	AAIController* Controller;
 
@@ -71,26 +71,38 @@ void UBaseBehaviorTree::MoveBehindDefenseLine(TArray<ABaseCharacter*>& Character
 			continue;
 		}
 
-		float Dist = FVector::Dist(Character->GetActorLocation(), TargetLocation);
+		FVector V1 = EnemyLocation - DefenseLocation;
+		FVector V2 = Character->GetActorLocation() - DefenseLocation;
+
+		V1.Normalize();
+		V2.Normalize();
+
+		float Cos = V1.Dot(V2);
+		float Dist = FVector::Dist(Character->GetActorLocation(), DefenseLocation);
 		float Range = Character->GetRange();
 
-		Controller->SetFocalPoint(TargetLocation);
-
-		if (0.5 * Range <= Dist && Dist <= 0.75 * Range)
+		if (Cos > 0)
 		{
-			// attack
-			Character->Act();
-		}
-		else
-		{
-			FVector TargetToCharacterDir = Character->GetActorLocation() - TargetLocation;
-			TargetToCharacterDir.Normalize();
-			// 넉넉잡아 0.65 * Range 까지 이동하도록 함
-			FVector Destination = TargetLocation + TargetToCharacterDir * 0.65 * Range;
+			// 아군이 방어선 바깥, 적진에 있는 것이므로 방어선 안으로 들어오게 해야함
+			FVector Destination = Character->GetActorLocation() - V1 * 2 * Dist * Cos;
 
 			Controller->MoveToLocation(Destination);
 		}
+		else
+		{
+			if (0.5 * Range <= Dist && Dist <= 0.75 * Range)
+			{
+				// No need to move				
+			}
+			else
+			{
+				// 넉넉잡아 0.65 * Range 까지 이동하도록 함
+				FVector Destination = DefenseLocation + V2 * 0.65 * Range;
 
+				Controller->MoveToLocation(Destination);
+			}
+
+		}
 	}
 }
 
