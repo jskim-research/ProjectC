@@ -3,82 +3,42 @@
 
 #include "AI/ClusterBlackboard.h"
 
-void UClusterBlackboard::SetAllyClusterAverageLocation(const FVector& InAverageLocation)
+void UClusterBlackboard::SetClusterAverageLocation(const FVector& InAverageLocation)
 {
-	AllyClusterAverageLocation = InAverageLocation;
+	ClusterAverageLocation = InAverageLocation;
 }
 
-const FVector& UClusterBlackboard::GetAllyClusterAverageLocation() const
+const FVector& UClusterBlackboard::GetClusterAverageLocation() const
 {
-	return AllyClusterAverageLocation;
+	return ClusterAverageLocation;
 }
 
-void UClusterBlackboard::SetAllyDealerAverageLocation(const FVector& InAverageLocation)
+void UClusterBlackboard::SetDealerAverageLocation(const FVector& InAverageLocation)
 {
-	AllyDealerAverageLocation = InAverageLocation;
+	DealerAverageLocation = InAverageLocation;
 }
 
-const FVector& UClusterBlackboard::GetAllyDealerAverageLocation() const
+const FVector& UClusterBlackboard::GetDealerAverageLocation() const
 {
-	return AllyDealerAverageLocation;
+	return DealerAverageLocation;
 }
 
-void UClusterBlackboard::SetAllyHealerAverageLocation(const FVector& InAverageLocation)
+void UClusterBlackboard::SetHealerAverageLocation(const FVector& InAverageLocation)
 {
-	AllyHealerAverageLocation = InAverageLocation;
+	HealerAverageLocation = InAverageLocation;
 }
 
-const FVector& UClusterBlackboard::GetAllyHealerAverageLocation() const
+const FVector& UClusterBlackboard::GetHealerAverageLocation() const
 {
-	return AllyHealerAverageLocation;
+	return HealerAverageLocation;
 }
 
-void UClusterBlackboard::SetAllyTankAverageLocation(const FVector& InAverageLocation)
+void UClusterBlackboard::SetTankAverageLocation(const FVector& InAverageLocation)
 {
-	AllyTankAverageLocation = InAverageLocation;
+	TankAverageLocation = InAverageLocation;
 }
 
-const FVector& UClusterBlackboard::GetAllyTankAverageLocation() const
+const FVector& UClusterBlackboard::GetTankAverageLocation() const
 {
-	return AllyTankAverageLocation;
-}
-
-void UClusterBlackboard::SetEnemyClusterAverageLocation(const FVector& InAverageLocation)
-{
-	EnemyClusterAverageLocation = InAverageLocation;
-}
-
-const FVector& UClusterBlackboard::GetEnemyClusterAverageLocation() const
-{
-	return EnemyClusterAverageLocation;
-}
-
-void UClusterBlackboard::SetEnemyDealerAverageLocation(const FVector& InAverageLocation)
-{
-	EnemyDealerAverageLocation = InAverageLocation;
-}
-
-const FVector& UClusterBlackboard::GetEnemyDealerAverageLocation() const
-{
-	return EnemyDealerAverageLocation;
-}
-
-void UClusterBlackboard::SetEnemyHealerAverageLocation(const FVector& InAverageLocation)
-{
-	EnemyHealerAverageLocation = InAverageLocation;
-}
-
-const FVector& UClusterBlackboard::GetEnemyHealerAverageLocation() const
-{
-	return EnemyHealerAverageLocation;
-}
-
-void UClusterBlackboard::SetEnemyTankAverageLocation(const FVector& InAverageLocation)
-{
-	EnemyTankAverageLocation = InAverageLocation;
-}
-
-const FVector& UClusterBlackboard::GetEnemyTankAverageLocation() const
-{
-	return EnemyTankAverageLocation;
+	return TankAverageLocation;
 }

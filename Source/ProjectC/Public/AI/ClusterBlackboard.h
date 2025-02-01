@@ -15,38 +15,21 @@ class PROJECTC_API UClusterBlackboard : public UObject
 	GENERATED_BODY()
 	
 public:
-	void SetAllyClusterAverageLocation(const FVector& InAverageLocation);
-	const FVector& GetAllyClusterAverageLocation() const;
+	void SetClusterAverageLocation(const FVector& InAverageLocation);
+	const FVector& GetClusterAverageLocation() const;
 
-	void SetAllyDealerAverageLocation(const FVector& InAverageLocation);
-	const FVector& GetAllyDealerAverageLocation() const;
+	void SetDealerAverageLocation(const FVector& InAverageLocation);
+	const FVector& GetDealerAverageLocation() const;
 
-	void SetAllyHealerAverageLocation(const FVector& InAverageLocation);
-	const FVector& GetAllyHealerAverageLocation() const;
+	void SetHealerAverageLocation(const FVector& InAverageLocation);
+	const FVector& GetHealerAverageLocation() const;
 
-	void SetAllyTankAverageLocation(const FVector& InAverageLocation);
-	const FVector& GetAllyTankAverageLocation() const;
-
-	void SetEnemyClusterAverageLocation(const FVector& InAverageLocation);
-	const FVector& GetEnemyClusterAverageLocation() const;
-
-	void SetEnemyDealerAverageLocation(const FVector& InAverageLocation);
-	const FVector& GetEnemyDealerAverageLocation() const;
-
-	void SetEnemyHealerAverageLocation(const FVector& InAverageLocation);
-	const FVector& GetEnemyHealerAverageLocation() const;
-
-	void SetEnemyTankAverageLocation(const FVector& InAverageLocation);
-	const FVector& GetEnemyTankAverageLocation() const;
+	void SetTankAverageLocation(const FVector& InAverageLocation);
+	const FVector& GetTankAverageLocation() const;
 
 private:
-	FVector AllyClusterAverageLocation;
-	FVector AllyDealerAverageLocation;
-	FVector AllyHealerAverageLocation;
-	FVector AllyTankAverageLocation;
-
-	FVector EnemyClusterAverageLocation;
-	FVector EnemyDealerAverageLocation;
-	FVector EnemyHealerAverageLocation;
-	FVector EnemyTankAverageLocation;
+	FVector ClusterAverageLocation;
+	FVector DealerAverageLocation;
+	FVector HealerAverageLocation;
+	FVector TankAverageLocation;
 };

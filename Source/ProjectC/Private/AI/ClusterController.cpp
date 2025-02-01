@@ -36,16 +36,16 @@ void AClusterController::UpdateBlackboard()
 {
 	if (ClusterBlackboard)
 	{
-		ClusterBlackboard->SetAllyClusterAverageLocation(SelfCluster->GetClusterAvergeLocation());
-		ClusterBlackboard->SetAllyDealerAverageLocation(SelfCluster->GetDealerAverageLocation());
-		ClusterBlackboard->SetAllyHealerAverageLocation(SelfCluster->GetHealerAverageLocation());
-		ClusterBlackboard->SetAllyTankAverageLocation(SelfCluster->GetTankAverageLocation());
-
-		ClusterBlackboard->SetEnemyClusterAverageLocation(SelfCluster->GetTargetCluster()->GetClusterAvergeLocation());
-		ClusterBlackboard->SetEnemyDealerAverageLocation(SelfCluster->GetTargetCluster()->GetDealerAverageLocation());
-		ClusterBlackboard->SetEnemyHealerAverageLocation(SelfCluster->GetTargetCluster()->GetHealerAverageLocation());
-		ClusterBlackboard->SetEnemyTankAverageLocation(SelfCluster->GetTargetCluster()->GetTankAverageLocation());
+		ClusterBlackboard->SetClusterAverageLocation(SelfCluster->GetClusterAvergeLocation());
+		ClusterBlackboard->SetDealerAverageLocation(SelfCluster->GetDealerAverageLocation());
+		ClusterBlackboard->SetHealerAverageLocation(SelfCluster->GetHealerAverageLocation());
+		ClusterBlackboard->SetTankAverageLocation(SelfCluster->GetTankAverageLocation());
 	}
+}
+
+const UClusterBlackboard* AClusterController::GetBlackboard() const
+{
+	return ClusterBlackboard;
 }
 
 EClusterCommand AClusterController::GetClusterCommand() const

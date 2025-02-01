@@ -126,13 +126,15 @@ void UTankBehaviorTree::TacticsHold(UCluster* AllyCluster)
 {
 	// 상대 군집 평균과 아군 군집 평균 사이를 defense line 으로 정하고 holding
 	UCluster* EnemyCluster = AllyCluster->GetTargetCluster();
+	const UClusterBlackboard* EnemyBlackboard = EnemyCluster->GetClusterController()->GetBlackboard();
+
 
 	// 상대 군집 또는 아군 군집이 없는 경우 전략 수행 X
 	if (AllyCluster->GetAllUnitNum() == 0 || EnemyCluster->GetAllUnitNum() == 0)
 		return;
 
-	const FVector& AllyAverageLocation = ClusterBlackboard->GetAllyClusterAverageLocation();
-	const FVector& EnemyAverageLocation = ClusterBlackboard->GetEnemyClusterAverageLocation();
+	const FVector& AllyAverageLocation = ClusterBlackboard->GetClusterAverageLocation();
+	const FVector& EnemyAverageLocation = EnemyBlackboard->GetClusterAverageLocation();
 
 	MoveToDefenseLine(AllyCluster->GetTankArray(), AllyAverageLocation, EnemyAverageLocation, EnemyAverageLocation, 0.4, 300);
 }
