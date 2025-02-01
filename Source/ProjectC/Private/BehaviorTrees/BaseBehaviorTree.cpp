@@ -94,6 +94,11 @@ void UBaseBehaviorTree::MoveBehindDefenseLine(TArray<ABaseCharacter*>& Character
 	}
 }
 
+void UBaseBehaviorTree::SetBlackboard(UClusterBlackboard* InClusterBlackboard)
+{
+	ClusterBlackboard = InClusterBlackboard;
+}
+
 bool UBaseBehaviorTree::HealPriority(const ABaseCharacter* Target, const ABaseCharacter* Character)
 {
 	// HP 가 작은 경우 Character 의 힐 우선순위 인정

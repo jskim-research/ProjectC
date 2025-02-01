@@ -14,9 +14,15 @@ AClusterController::AClusterController()
 	// Tick 간격 설정 (예: 0.5초마다 호출)
 	PrimaryActorTick.TickInterval = 0.5f;
 
+	ClusterBlackboard = NewObject<UClusterBlackboard>();
+
 	DealerBehaviorTree = NewObject<UDealerBehaviorTree>();
 	HealerBehaviorTree = NewObject<UHealerBehaviorTree>();
 	TankBehaviorTree = NewObject<UTankBehaviorTree>();
+
+	DealerBehaviorTree->SetBlackboard(ClusterBlackboard);
+	HealerBehaviorTree->SetBlackboard(ClusterBlackboard);
+	TankBehaviorTree->SetBlackboard(ClusterBlackboard);
 
 	ClusterCommand = EClusterCommand::Hold;
 }
@@ -24,6 +30,22 @@ AClusterController::AClusterController()
 void AClusterController::Possess(UCluster* InSelfCluster)
 {
 	SelfCluster = InSelfCluster;
+}
+
+void AClusterController::UpdateBlackboard()
+{
+	if (ClusterBlackboard)
+	{
+		ClusterBlackboard->SetAllyClusterAverageLocation(SelfCluster->GetClusterAvergeLocation());
+		ClusterBlackboard->SetAllyDealerAverageLocation(SelfCluster->GetDealerAverageLocation());
+		ClusterBlackboard->SetAllyHealerAverageLocation(SelfCluster->GetHealerAverageLocation());
+		ClusterBlackboard->SetAllyTankAverageLocation(SelfCluster->GetTankAverageLocation());
+
+		ClusterBlackboard->SetEnemyClusterAverageLocation(SelfCluster->GetTargetCluster()->GetClusterAvergeLocation());
+		ClusterBlackboard->SetEnemyDealerAverageLocation(SelfCluster->GetTargetCluster()->GetDealerAverageLocation());
+		ClusterBlackboard->SetEnemyHealerAverageLocation(SelfCluster->GetTargetCluster()->GetHealerAverageLocation());
+		ClusterBlackboard->SetEnemyTankAverageLocation(SelfCluster->GetTargetCluster()->GetTankAverageLocation());
+	}
 }
 
 EClusterCommand AClusterController::GetClusterCommand() const
@@ -38,6 +60,7 @@ void AClusterController::Tick(float DeltaTime)
 
 	if (SelfCluster && SelfCluster->GetTargetCluster())
 	{
+		UpdateBlackboard();
 		TankBehaviorTree->Run(SelfCluster);
 		DealerBehaviorTree->Run(SelfCluster);
 		HealerBehaviorTree->Run(SelfCluster);

@@ -131,8 +131,8 @@ void UTankBehaviorTree::TacticsHold(UCluster* AllyCluster)
 	if (AllyCluster->GetAllUnitNum() == 0 || EnemyCluster->GetAllUnitNum() == 0)
 		return;
 
-	FVector AllyAverageLocation = AllyCluster->GetClusterAvergeLocation();
-	FVector EnemyAverageLocation = EnemyCluster->GetClusterAvergeLocation();
+	const FVector& AllyAverageLocation = ClusterBlackboard->GetAllyClusterAverageLocation();
+	const FVector& EnemyAverageLocation = ClusterBlackboard->GetEnemyClusterAverageLocation();
 
 	MoveToDefenseLine(AllyCluster->GetTankArray(), AllyAverageLocation, EnemyAverageLocation, EnemyAverageLocation, 0.4, 300);
 }

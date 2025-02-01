@@ -11,6 +11,7 @@
 #include "Characters/BaseCharacter.h"
 #include "CustomMathUtils/CustomProbabilityUtilities.h"
 #include "AIController.h"
+#include "AI/ClusterBlackboard.h"
 #include "BaseBehaviorTree.generated.h"
 
 class UCluster;
@@ -28,7 +29,12 @@ public:
 	void MoveToDefenseLine(TArray<ABaseCharacter*>& Characters, const FVector& StartLocation, const FVector& EndLocation, const FVector& LookAtLocation, float Ratio, float Interval, TFunction<void(FAIRequestID, const FPathFollowingResult&)> OnArrivalCallback = nullptr);
 	void MoveBehindDefenseLine(TArray<ABaseCharacter*>& Characters, const FVector& TargetLocation);
 
+	void SetBlackboard(UClusterBlackboard* InClusterBlackboard);
+
 	static bool HealPriority(const ABaseCharacter* Target, const ABaseCharacter* Character);
 	static bool AttackPriority(const ABaseCharacter* Target, const ABaseCharacter* Character);
 
+protected:
+	UPROPERTY()
+	UClusterBlackboard* ClusterBlackboard;
 };

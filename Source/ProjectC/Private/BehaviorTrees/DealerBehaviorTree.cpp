@@ -114,13 +114,13 @@ void UDealerBehaviorTree::TacticsHold(UCluster* AllyCluster)
 	if (AllyCluster->GetTankNum() > 0)
 	{
 		// 탱커 군집 평균점과의 거리가 0.5 * Range ~ 0.75 * Range 이도록 조정
-		MoveBehindDefenseLine(AllyCluster->GetDealerArray(), AllyCluster->GetTankAverageLocation());
+		MoveBehindDefenseLine(AllyCluster->GetDealerArray(), ClusterBlackboard->GetAllyTankAverageLocation());
 	}
 	else
 	{
 		// 탱커 군집이 없으면 딜러 군집이 최전선
-		FVector AllyAverageLocation = AllyCluster->GetClusterAvergeLocation();
-		FVector EnemyAverageLocation = AllyCluster->GetTargetCluster()->GetClusterAvergeLocation();
+		const FVector& AllyAverageLocation = ClusterBlackboard->GetAllyClusterAverageLocation();
+		const FVector& EnemyAverageLocation =ClusterBlackboard->GetEnemyClusterAverageLocation();
 
 		MoveToDefenseLine(AllyCluster->GetDealerArray(), AllyAverageLocation, EnemyAverageLocation, EnemyAverageLocation, 0.4, 300);
 	}

@@ -14,6 +14,7 @@
 #include "BehaviorTrees/DealerBehaviorTree.h"
 #include "BehaviorTrees/HealerBehaviorTree.h"
 #include "BehaviorTrees/TankBehaviorTree.h"
+#include "AI/ClusterBlackboard.h"
 #include "ClusterController.generated.h"
 
 
@@ -27,6 +28,8 @@ class PROJECTC_API AClusterController : public AActor
 public:
 	AClusterController();
 	void Possess(UCluster* InSelfCluster);
+	void UpdateBlackboard();
+
 	EClusterCommand GetClusterCommand() const;
 
 protected:
@@ -46,4 +49,7 @@ private:
 	UBaseBehaviorTree* TankBehaviorTree;
 
 	EClusterCommand ClusterCommand;
+
+	UPROPERTY()
+	UClusterBlackboard* ClusterBlackboard;
 };
