@@ -137,7 +137,7 @@ void UDealerBehaviorTree::TacticsHold(UCluster* AllyCluster)
 
 		for (ABaseCharacter* Character : AllyCluster->GetTargetCluster()->GetDealerArray())
 		{
-			bool HasMorePriority = !Target || (Target->GetCurrentHealth() > Character->GetCurrentHealth() && FVector::Dist(Character->GetActorLocation(), Dealer->GetActorLocation()) <= Range);
+			bool HasMorePriority = (!Target || Target->GetCurrentHealth() > Character->GetCurrentHealth()) && FVector::Dist(Character->GetActorLocation(), Dealer->GetActorLocation()) <= Range;
 			if (HasMorePriority)
 			{
 				Target = Character;
@@ -146,7 +146,7 @@ void UDealerBehaviorTree::TacticsHold(UCluster* AllyCluster)
 
 		for (ABaseCharacter* Character : AllyCluster->GetTargetCluster()->GetHealerArray())
 		{
-			bool HasMorePriority = !Target || (Target->GetCurrentHealth() > Character->GetCurrentHealth() && FVector::Dist(Character->GetActorLocation(), Dealer->GetActorLocation()) <= Range);
+			bool HasMorePriority = (!Target || Target->GetCurrentHealth() > Character->GetCurrentHealth()) && FVector::Dist(Character->GetActorLocation(), Dealer->GetActorLocation()) <= Range;
 			if (HasMorePriority)
 			{
 				Target = Character;
@@ -155,7 +155,7 @@ void UDealerBehaviorTree::TacticsHold(UCluster* AllyCluster)
 
 		for (ABaseCharacter* Character : AllyCluster->GetTargetCluster()->GetTankArray())
 		{
-			bool HasMorePriority = !Target || (Target->GetCurrentHealth() > Character->GetCurrentHealth() && FVector::Dist(Character->GetActorLocation(), Dealer->GetActorLocation()) <= Range);
+			bool HasMorePriority = (!Target || Target->GetCurrentHealth() > Character->GetCurrentHealth()) && FVector::Dist(Character->GetActorLocation(), Dealer->GetActorLocation()) <= Range;
 			if (HasMorePriority)
 			{
 				Target = Character;

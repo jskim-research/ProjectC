@@ -125,7 +125,7 @@ void UHealerBehaviorTree::TacticsHold(UCluster* AllyCluster)
 
 		for (ABaseCharacter* Character : AllyCluster->GetDealerArray())
 		{
-			bool HasMorePriority = !Target || (Target->GetCurrentHealth() > Character->GetCurrentHealth() && FVector::Dist(Character->GetActorLocation(), Healer->GetActorLocation()) <= Range);
+			bool HasMorePriority = (!Target || Target->GetCurrentHealth() > Character->GetCurrentHealth()) && FVector::Dist(Character->GetActorLocation(), Healer->GetActorLocation()) <= Range;
 			if (HasMorePriority)
 			{
 				Target = Character;
@@ -134,7 +134,7 @@ void UHealerBehaviorTree::TacticsHold(UCluster* AllyCluster)
 
 		for (ABaseCharacter* Character : AllyCluster->GetHealerArray())
 		{
-			bool HasMorePriority = !Target || (Target->GetCurrentHealth() > Character->GetCurrentHealth() && FVector::Dist(Character->GetActorLocation(), Healer->GetActorLocation()) <= Range);
+			bool HasMorePriority = (!Target || Target->GetCurrentHealth() > Character->GetCurrentHealth()) && FVector::Dist(Character->GetActorLocation(), Healer->GetActorLocation()) <= Range;
 			if (HasMorePriority)
 			{
 				Target = Character;
@@ -143,7 +143,7 @@ void UHealerBehaviorTree::TacticsHold(UCluster* AllyCluster)
 
 		for (ABaseCharacter* Character : AllyCluster->GetTankArray())
 		{
-			bool HasMorePriority = !Target || (Target->GetCurrentHealth() > Character->GetCurrentHealth() && FVector::Dist(Character->GetActorLocation(), Healer->GetActorLocation()) <= Range);
+			bool HasMorePriority = (!Target || Target->GetCurrentHealth() > Character->GetCurrentHealth()) && FVector::Dist(Character->GetActorLocation(), Healer->GetActorLocation()) <= Range;
 			if (HasMorePriority)
 			{
 				Target = Character;
