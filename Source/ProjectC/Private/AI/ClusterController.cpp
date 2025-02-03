@@ -40,12 +40,23 @@ void AClusterController::UpdateBlackboard()
 		ClusterBlackboard->SetDealerAverageLocation(SelfCluster->GetDealerAverageLocation());
 		ClusterBlackboard->SetHealerAverageLocation(SelfCluster->GetHealerAverageLocation());
 		ClusterBlackboard->SetTankAverageLocation(SelfCluster->GetTankAverageLocation());
+
+		FVector DealerHealerAverageLocation = FVector::ZeroVector;
+		DealerHealerAverageLocation += ClusterBlackboard->GetDealerAverageLocation() * SelfCluster->GetDealerNum();
+		DealerHealerAverageLocation += ClusterBlackboard->GetHealerAverageLocation() * SelfCluster->GetHealerNum();
+		DealerHealerAverageLocation /= FMath::Max(SelfCluster->GetDealerNum() + SelfCluster->GetHealerNum(), uint32(1));
+		ClusterBlackboard->SetDealerHealerAverageLocation(DealerHealerAverageLocation);
 	}
 }
 
 const UClusterBlackboard* AClusterController::GetBlackboard() const
 {
 	return ClusterBlackboard;
+}
+
+void AClusterController::SetClusterCommand(EClusterCommand InClusterCommand)
+{
+	ClusterCommand = InClusterCommand;
 }
 
 EClusterCommand AClusterController::GetClusterCommand() const

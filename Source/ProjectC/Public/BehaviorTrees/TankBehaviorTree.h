@@ -23,6 +23,7 @@ protected:
 	// AllyTank 가 EnemyHealer -> EnemyTarget 힐 차단
 	void TacticsTankHealDefense(TArray<ABaseCharacter*>& AllyTank, TArray<ABaseCharacter*>& EnemyHealer, TArray<ABaseCharacter*>& EnemyTarget);
 	void TacticsHold(UCluster* AllyCluster);
+	void TacticsCharge(UCluster* AllyCluster);
 
 	ETankBehaviorState GetTankBehaviorState(UCluster* AllyCluster, UCluster* EnemyCluster) const;
 };

@@ -21,6 +21,7 @@ void UTankBehaviorTree::Run(UCluster* AllyCluster)
 		break;
 
 	case EClusterCommand::Charge:
+		TacticsCharge(AllyCluster);
 		break;
 	}
 
@@ -56,32 +57,12 @@ void UTankBehaviorTree::TacticsTankDealDefense(UCluster* AllyCluster, UCluster* 
 {
 	// 탱커 -> 딜각차단 전술
 	// 우리팀 딜러 또는 힐러 - 상대팀 딜러간의 각도 계산 후 중간 지점 방어
+	const UClusterBlackboard* EnemyBlackboard = EnemyCluster->GetClusterController()->GetBlackboard();
 
-	FVector AllyLocation = FVector::ZeroVector;
-	FVector EnemyLocation = FVector::ZeroVector;
+	const FVector& AllyAverageLocation = ClusterBlackboard->GetDealerHealerAverageLocation();
+	const FVector& EnemyAverageLocation = EnemyBlackboard->GetDealerAverageLocation();
 
-	for (ABaseCharacter* Character : AllyCluster->GetDealerArray())
-	{
-		AllyLocation += Character->GetActorLocation();
-	}
-
-	for (ABaseCharacter* Character : AllyCluster->GetHealerArray())
-	{
-		AllyLocation += Character->GetActorLocation();
-	}
-
-	// DivideByZero 에러 대비 최소값 1 설정
-	AllyLocation /= FMath::Max((AllyCluster->GetDealerArray().Num() + AllyCluster->GetHealerArray().Num()), 1);
-
-	for (ABaseCharacter* Character : EnemyCluster->GetDealerArray())
-	{
-		EnemyLocation += Character->GetActorLocation();
-	}
-
-	// DivideByZero 에러 대비 최소값 1 설정
-	EnemyLocation /= FMath::Max(EnemyCluster->GetDealerArray().Num(), 1);
-
-	MoveToDefenseLine(AllyCluster->GetTankArray(), AllyLocation, EnemyLocation, EnemyLocation, 0.5, 300);
+	MoveToDefenseLine(AllyCluster->GetTankArray(), AllyAverageLocation, EnemyAverageLocation, EnemyAverageLocation, 0.5, 300);
 }
 
 void UTankBehaviorTree::TacticsTankHealDefense(TArray<ABaseCharacter*>& AllyTank, TArray<ABaseCharacter*>& EnemyHealer, TArray<ABaseCharacter*>& EnemyTarget)
@@ -137,6 +118,35 @@ void UTankBehaviorTree::TacticsHold(UCluster* AllyCluster)
 	const FVector& EnemyAverageLocation = EnemyBlackboard->GetClusterAverageLocation();
 
 	MoveToDefenseLine(AllyCluster->GetTankArray(), AllyAverageLocation, EnemyAverageLocation, EnemyAverageLocation, 0.4, 300);
+}
+
+void UTankBehaviorTree::TacticsCharge(UCluster* AllyCluster)
+{
+	// 돌격 진형 시 타겟 우선순위 딜러 > 힐러 > 탱커
+	// 탱커는 타겟에 대한 힐을 막는다, 상대 힐러가 없는 경우 딜각 차단
+	UCluster* EnemyCluster = AllyCluster->GetTargetCluster();
+
+	if (EnemyCluster->GetHealerNum() > 0)
+	{
+		// 힐각 차단
+		if (EnemyCluster->GetDealerNum() > 0)
+		{
+			TacticsTankHealDefense(AllyCluster->GetTankArray(), EnemyCluster->GetHealerArray(), EnemyCluster->GetDealerArray());
+		}
+		else if (EnemyCluster->GetHealerNum() >= 2)
+		{
+			TacticsTankHealDefense(AllyCluster->GetTankArray(), EnemyCluster->GetHealerArray(), EnemyCluster->GetHealerArray());
+		}
+		else if (EnemyCluster->GetTankNum() > 0)
+		{
+			TacticsTankHealDefense(AllyCluster->GetTankArray(), EnemyCluster->GetHealerArray(), EnemyCluster->GetTankArray());
+		}
+	}
+	else if (EnemyCluster->GetDealerNum() > 0)
+	{
+		// 딜각 차단
+		TacticsTankDealDefense(AllyCluster, EnemyCluster);
+	}
 }
 
 ETankBehaviorState UTankBehaviorTree::GetTankBehaviorState(UCluster* AllyCluster, UCluster* EnemyCluster) const

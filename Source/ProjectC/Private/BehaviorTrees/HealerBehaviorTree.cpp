@@ -20,6 +20,7 @@ void UHealerBehaviorTree::Run(UCluster* AllyCluster)
 		break;
 
 	case EClusterCommand::Charge:
+		TacticsCharge(AllyCluster);
 		break;
 	}
 
@@ -74,7 +75,7 @@ void UHealerBehaviorTree::TacticsHealerHeal(UCluster* AllyCluster)
 
 			if (ShouldEvade)
 			{
-				FVector RandomEvasionPoint = FCustomProbabilityUtilities::GenerateRandomSphericalPoint();
+				FVector RandomEvasionPoint = FCustomProbabilityUtilities::GenerateRandomSphericalPoint(300);
 
 				Controller->MoveToLocation(Character->GetActorLocation() + RandomEvasionPoint);
 			}
@@ -101,7 +102,6 @@ void UHealerBehaviorTree::TacticsHealerHeal(UCluster* AllyCluster)
 void UHealerBehaviorTree::TacticsHold(UCluster* AllyCluster)
 {
 	const UClusterBlackboard* EnemyBlackboard = AllyCluster->GetTargetCluster()->GetClusterController()->GetBlackboard();
-	AAIController* Controller;
 
 	if (AllyCluster->GetDealerNum() > 0)
 	{	
@@ -115,6 +115,59 @@ void UHealerBehaviorTree::TacticsHold(UCluster* AllyCluster)
 	{
 
 	}
+
+	PerformHeal(AllyCluster);	
+}
+
+void UHealerBehaviorTree::TacticsCharge(UCluster* AllyCluster)
+{
+	// 아군 딜러 > 힐러 > 탱커 우선순위로 따라다니면서 힐
+	AAIController* Controller;
+	const FVector* TargetClusterLocation = nullptr;
+
+	if (AllyCluster->GetDealerNum() > 0)
+	{
+		TargetClusterLocation = &ClusterBlackboard->GetDealerAverageLocation();
+	}
+	else if (AllyCluster->GetHealerNum() > 0)
+	{
+		TargetClusterLocation = &ClusterBlackboard->GetHealerAverageLocation();
+	}
+	else if (AllyCluster->GetTankNum() > 0)
+	{
+		TargetClusterLocation = &ClusterBlackboard->GetTankAverageLocation();
+	}
+
+	if (TargetClusterLocation)
+	{
+		for (ABaseCharacter* Character : AllyCluster->GetHealerArray())
+		{
+			// 돌격 진형이므로 일부러 Range 보다 가깝게 이동시킴
+			float Range = 0.5 * Character->GetRange();
+
+			if (FVector::Dist(Character->GetActorLocation(), *TargetClusterLocation) < Range)
+			{
+				// 사정 거리 안에 있는 경우 공격 수행
+				PerformHeal(AllyCluster);
+			}
+			else
+			{
+				// 사정 거리 바깥에 있는 경우 + 이동중이지 않은 경우 이동 수행
+				Controller = Cast<AAIController>(Character->GetController());
+				if (Controller && Controller->GetMoveStatus() != EPathFollowingStatus::Moving)
+				{
+					FVector RandomPoint = FCustomProbabilityUtilities::GenerateRandomSphericalPoint(Range);
+					Controller->MoveToLocation(*TargetClusterLocation + RandomPoint);
+				}
+
+			}
+		}
+	}
+}
+
+void UHealerBehaviorTree::PerformHeal(UCluster* AllyCluster)
+{
+	AAIController* Controller;
 
 	// 힐하기 (naive 하게 우선 구현)
 	for (ABaseCharacter* Healer : AllyCluster->GetHealerArray())
@@ -160,7 +213,6 @@ void UHealerBehaviorTree::TacticsHold(UCluster* AllyCluster)
 			}
 		}
 	}
-	
 }
 
 ABaseCharacter* UHealerBehaviorTree::GetHealTarget(UCluster* AllyCluster)

@@ -27,9 +27,13 @@ public:
 	void SetTankAverageLocation(const FVector& InAverageLocation);
 	const FVector& GetTankAverageLocation() const;
 
+	void SetDealerHealerAverageLocation(const FVector& InAverageLocation);
+	const FVector& GetDealerHealerAverageLocation() const;
+
 private:
 	FVector ClusterAverageLocation;
 	FVector DealerAverageLocation;
 	FVector HealerAverageLocation;
 	FVector TankAverageLocation;
+	FVector DealerHealerAverageLocation;
 };

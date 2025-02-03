@@ -6,6 +6,7 @@
 
 ANPCDealerCharacter::ANPCDealerCharacter()
 {
+    // Projectile 이렇게 나누지 말고, shield 처럼 collision channel 바꾸는 형태로 가야함 
     static ConstructorHelpers::FClassFinder<AActor> AllyProjectileClassFinder(TEXT("/Game/Blueprints/Projectiles/BP_AllyProjectile"));
     static ConstructorHelpers::FClassFinder<AActor> EnemyProjectileClassFinder(TEXT("/Game/Blueprints/Projectiles/BP_EnemyProjectile"));
     

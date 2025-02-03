@@ -31,6 +31,8 @@ public:
 	void UpdateBlackboard();
 
 	const UClusterBlackboard* GetBlackboard() const;
+
+	void SetClusterCommand(EClusterCommand InClusterCommand);
 	EClusterCommand GetClusterCommand() const;
 
 protected:

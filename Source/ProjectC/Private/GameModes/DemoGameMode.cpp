@@ -40,19 +40,12 @@ void ADemoGameMode::BeginPlay()
 		Map(0, 1) = FGridTile(ERoleType::Tank, false);
 		Map(0, 0) = FGridTile(ERoleType::Tank, false);
 
-		/*
-		Map(0, 4) = FGridTile(ERoleType::Healer, false);
-		Map(0, 3) = FGridTile(ERoleType::Healer, false);
-		Map(0, 2) = FGridTile(ERoleType::Healer, false);
-		*/
-
 		Map(4, 2) = FGridTile(ERoleType::Dealer, true);
 		Map(4, 1) = FGridTile(ERoleType::Dealer, true);
 		Map(4, 0) = FGridTile(ERoleType::Healer, true);
 		
 		Map(3, 1) = FGridTile(ERoleType::Tank, true);
 		Map(3, 2) = FGridTile(ERoleType::Tank, true);
-		// Map(3, 3) = FGridTile(ERoleType::Tank, true);
 
 		GI->SpawnGrid(World, Map);
 

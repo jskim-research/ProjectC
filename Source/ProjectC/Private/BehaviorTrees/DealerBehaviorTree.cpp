@@ -20,6 +20,7 @@ void UDealerBehaviorTree::Run(UCluster* AllyCluster)
 		break;
 
 	case EClusterCommand::Charge:
+		TacticsCharge(AllyCluster);
 		break;
 	}
 
@@ -85,7 +86,7 @@ void UDealerBehaviorTree::TacticsDealerAttack(UCluster* AllyCluster)
 
 			if (ShouldEvade)
 			{
-				FVector RandomEvasionPoint = FCustomProbabilityUtilities::GenerateRandomSphericalPoint();
+				FVector RandomEvasionPoint = FCustomProbabilityUtilities::GenerateRandomSphericalPoint(300);
 
 				Controller->MoveToLocation(Character->GetActorLocation() + RandomEvasionPoint);
 			}
@@ -111,9 +112,9 @@ void UDealerBehaviorTree::TacticsDealerAttack(UCluster* AllyCluster)
 
 void UDealerBehaviorTree::TacticsHold(UCluster* AllyCluster)
 {
-	const UClusterBlackboard* EnemyBlackboard = AllyCluster->GetTargetCluster()->GetClusterController()->GetBlackboard();
-	AAIController* Controller;
-
+	UCluster* EnemyCluster = AllyCluster->GetTargetCluster();
+	const UClusterBlackboard* EnemyBlackboard = EnemyCluster->GetClusterController()->GetBlackboard();
+	
 	if (AllyCluster->GetTankNum() > 0)
 	{
 		// 탱커 군집 평균점과의 거리가 0.5 * Range ~ 0.75 * Range 이도록 조정
@@ -128,6 +129,62 @@ void UDealerBehaviorTree::TacticsHold(UCluster* AllyCluster)
 		MoveToDefenseLine(AllyCluster->GetDealerArray(), AllyAverageLocation, EnemyAverageLocation, EnemyAverageLocation, 0.4, 300);
 	}
 	
+	PerformAttack(AllyCluster);
+}
+
+void UDealerBehaviorTree::TacticsCharge(UCluster* AllyCluster)
+{
+	// 적군 딜러 > 힐러 > 탱커 우선순위로 따라다니면서 공격
+	UCluster* EnemyCluster = AllyCluster->GetTargetCluster();
+	const UClusterBlackboard* EnemyBlackboard = EnemyCluster->GetClusterController()->GetBlackboard();
+	AAIController* Controller;
+	const FVector* TargetClusterLocation = nullptr;
+
+	if (EnemyCluster->GetDealerNum() > 0)
+	{
+		TargetClusterLocation = &EnemyBlackboard->GetDealerAverageLocation();
+	}
+	else if (EnemyCluster->GetHealerNum() > 0)
+	{
+		TargetClusterLocation = &EnemyBlackboard->GetHealerAverageLocation();
+	}
+	else if (EnemyCluster->GetTankNum() > 0)
+	{
+		TargetClusterLocation = &EnemyBlackboard->GetTankAverageLocation();
+	}
+
+	if (TargetClusterLocation)
+	{
+		for (ABaseCharacter* Character : AllyCluster->GetDealerArray())
+		{
+			// 돌격 진형이므로 일부러 Range 보다 가깝게 이동시킴
+			float Range = 0.5 * Character->GetRange();
+
+			if (FVector::Dist(Character->GetActorLocation(), *TargetClusterLocation) < Range)
+			{
+				// 사정 거리 안에 있는 경우 공격 수행
+				PerformAttack(AllyCluster);
+			}
+			else
+			{
+				// 사정 거리 바깥에 있는 경우 + 이동중이지 않은 경우 이동 수행
+				Controller = Cast<AAIController>(Character->GetController());
+				if (Controller && Controller->GetMoveStatus() != EPathFollowingStatus::Moving)
+				{
+					FVector RandomPoint = FCustomProbabilityUtilities::GenerateRandomSphericalPoint(Range);
+					Controller->MoveToLocation(*TargetClusterLocation + RandomPoint);
+				}
+
+			}
+		}
+	}
+}
+
+void UDealerBehaviorTree::PerformAttack(UCluster* AllyCluster)
+{
+	AAIController* Controller;
+	UCluster* EnemyCluster = AllyCluster->GetTargetCluster();
+
 	// 딜하기 (naive 하게 우선 구현)
 	for (ABaseCharacter* Dealer : AllyCluster->GetDealerArray())
 	{
@@ -135,7 +192,7 @@ void UDealerBehaviorTree::TacticsHold(UCluster* AllyCluster)
 		ABaseCharacter* Target = nullptr;
 		float Range = Dealer->GetRange();
 
-		for (ABaseCharacter* Character : AllyCluster->GetTargetCluster()->GetDealerArray())
+		for (ABaseCharacter* Character : EnemyCluster->GetDealerArray())
 		{
 			bool HasMorePriority = (!Target || Target->GetCurrentHealth() > Character->GetCurrentHealth()) && FVector::Dist(Character->GetActorLocation(), Dealer->GetActorLocation()) <= Range;
 			if (HasMorePriority)
@@ -144,7 +201,7 @@ void UDealerBehaviorTree::TacticsHold(UCluster* AllyCluster)
 			}
 		}
 
-		for (ABaseCharacter* Character : AllyCluster->GetTargetCluster()->GetHealerArray())
+		for (ABaseCharacter* Character : EnemyCluster->GetHealerArray())
 		{
 			bool HasMorePriority = (!Target || Target->GetCurrentHealth() > Character->GetCurrentHealth()) && FVector::Dist(Character->GetActorLocation(), Dealer->GetActorLocation()) <= Range;
 			if (HasMorePriority)
@@ -153,7 +210,7 @@ void UDealerBehaviorTree::TacticsHold(UCluster* AllyCluster)
 			}
 		}
 
-		for (ABaseCharacter* Character : AllyCluster->GetTargetCluster()->GetTankArray())
+		for (ABaseCharacter* Character : EnemyCluster->GetTankArray())
 		{
 			bool HasMorePriority = (!Target || Target->GetCurrentHealth() > Character->GetCurrentHealth()) && FVector::Dist(Character->GetActorLocation(), Dealer->GetActorLocation()) <= Range;
 			if (HasMorePriority)
@@ -162,7 +219,7 @@ void UDealerBehaviorTree::TacticsHold(UCluster* AllyCluster)
 			}
 		}
 
-		if (Target && Target != Dealer)
+		if (Target)
 		{
 			Controller = Cast<AAIController>(Dealer->GetController());
 			if (Controller)

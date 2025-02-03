@@ -16,16 +16,16 @@ struct FCustomProbabilityUtilities
 		return false;
 	}
 
-	static FORCEINLINE FVector GenerateRandomSphericalPoint()
+	static FORCEINLINE FVector GenerateRandomSphericalPoint(float Radius)
 	{
-		FVector RandomEvasionPoint = FVector::ZeroVector;
+		FVector RandomSphericalPoint = FVector::ZeroVector;
 		float Angle = FMath::FRand() * 2.0f * PI;
 		// 제곱근 분포로 원형의 원점에 밀도가 높은 현상 보정 => 밀도 uniform 하게
-		float Radius = FMath::Sqrt(FMath::FRand()) * 300;
+		float RandomRadius = FMath::Sqrt(FMath::FRand()) * Radius;
 
-		RandomEvasionPoint.X = Radius * FMath::Cos(Angle);
-		RandomEvasionPoint.Y = Radius * FMath::Sin(Angle);
+		RandomSphericalPoint.X = RandomRadius * FMath::Cos(Angle);
+		RandomSphericalPoint.Y = RandomRadius * FMath::Sin(Angle);
 
-		return RandomEvasionPoint;
+		return RandomSphericalPoint;
 	}
 };

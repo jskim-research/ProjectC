@@ -42,3 +42,13 @@ const FVector& UClusterBlackboard::GetTankAverageLocation() const
 {
 	return TankAverageLocation;
 }
+
+void UClusterBlackboard::SetDealerHealerAverageLocation(const FVector& InAverageLocation)
+{
+	DealerHealerAverageLocation = InAverageLocation;
+}
+
+const FVector& UClusterBlackboard::GetDealerHealerAverageLocation() const
+{
+	return DealerHealerAverageLocation;
+}
