@@ -6,6 +6,7 @@
 #include "Characters/BaseCharacter.h"
 #include "PlayerCharacter.generated.h"
 
+class UCoreGameInstance;
 class USpringArmComponent;
 class UCameraComponent;
 class UInputMappingContext;
@@ -35,6 +36,11 @@ protected:
 
 	void Jump();
 
+	void ClusterCommandHold();
+	void ClusterCommandCharge();
+
+	UCoreGameInstance* GameInstance;
+
 private:
 	/** Camera boom positioning the camera behind the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
@@ -63,4 +69,11 @@ private:
 	/** Act Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* ActAction;
+
+	/** Cluster Command Key */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* ClusterCommandHoldAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* ClusterCommandChargeAction;
 };

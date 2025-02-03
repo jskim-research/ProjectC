@@ -23,6 +23,7 @@ public:
 	void SpawnGrid(UWorld* InWorld, const FGrid& InGrid);
 	void AddUnitToCluster(ABaseCharacter* InCharacter, ERoleType Type, bool IsAlly);
 	void SetPlayer(ABaseCharacter* InPlayer);
+	void PerformPlayerCommand(EClusterCommand InClusterCommand);
 
 private:	
 	UPROPERTY()

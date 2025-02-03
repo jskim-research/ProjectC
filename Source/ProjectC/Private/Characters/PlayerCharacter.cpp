@@ -74,6 +74,8 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 		// Act 함수는 override 되어있음
 		EnhancedInputComponent->BindAction(ActAction, ETriggerEvent::Triggered, this, &ABaseCharacter::Act);
 
+		EnhancedInputComponent->BindAction(ClusterCommandHoldAction, ETriggerEvent::Triggered, this, &APlayerCharacter::ClusterCommandHold);
+		EnhancedInputComponent->BindAction(ClusterCommandChargeAction, ETriggerEvent::Triggered, this, &APlayerCharacter::ClusterCommandCharge);
 	}
 	else
 	{
@@ -99,10 +101,10 @@ void APlayerCharacter::BeginPlay()
 	UWorld* World = GetWorld();
 	if (World)
 	{
-		UCoreGameInstance* GI = Cast<UCoreGameInstance>(World->GetGameInstance());
-		if (GI)
+		GameInstance = Cast<UCoreGameInstance>(World->GetGameInstance());
+		if (GameInstance)
 		{
-			GI->SetPlayer(this);
+			GameInstance->SetPlayer(this);
 		}
 	}
 }
@@ -146,4 +148,20 @@ void APlayerCharacter::Look(const FInputActionValue& Value)
 void APlayerCharacter::Jump()
 {
 	ACharacter::Jump();
+}
+
+void APlayerCharacter::ClusterCommandHold()
+{
+	if (GameInstance)
+	{
+		GameInstance->PerformPlayerCommand(EClusterCommand::Hold);
+	}
+}
+
+void APlayerCharacter::ClusterCommandCharge()
+{
+	if (GameInstance)
+	{
+		GameInstance->PerformPlayerCommand(EClusterCommand::Charge);
+	}
 }

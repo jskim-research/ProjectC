@@ -51,3 +51,13 @@ void UCoreGameInstance::SetPlayer(ABaseCharacter* InPlayer)
 	AllyCluster->AddUnit(Player, ERoleType::Healer);
 }
 
+void UCoreGameInstance::PerformPlayerCommand(EClusterCommand InClusterCommand)
+{
+	AClusterController* Controller = AllyCluster->GetClusterController();
+
+	if (Controller)
+	{
+		Controller->SetClusterCommand(InClusterCommand);
+	}
+}
+
